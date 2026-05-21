@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Layer.ONE — Financial Crime Intelligence Platform</title>
+<style>
+
+:root{
+--bg:#0A0E17;--surface:#111827;--border:#1E293B;
+--text:#F1F5F9;--muted:#94A3B8;--accent:#00D4FF;
+--accent2:#0EA5E9;--accentGlow:rgba(0,212,255,.15);
+--danger:#EF4444;--success:#10B981;--warning:#F59E0B;
+--font:'Inter','SF Pro Display',-apple-system,sans-serif;
+--mono:'JetBrains Mono','SF Mono',monospace;
+--radius:8px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg);color:var(--text);font-family:var(--font);
+line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+
+/* ── SCENARIOS ── */
+.scenarios-section{padding:100px 24px;max-width:1400px;margin:0 auto}
+.scenarios-header{text-align:center;margin-bottom:48px}
+.scenarios-header .label{font-size:.8rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:8px}
+.scenarios-header h2{font-size:2.2rem;font-weight:700;margin-bottom:12px}
+.scenarios-header p{color:var(--muted);max-width:600px;margin:0 auto}
+
+/* Carousel */
+.scenario-panels{position:relative}
+.scenario-panel{display:none;padding:0 8px;box-sizing:border-box}
+.scenario-panel.active{display:block}
+.scenario-tabs{display:flex;justify-content:center;gap:12px;margin-bottom:32px;flex-wrap:wrap}
+.scenario-tab{padding:10px 20px;border-radius:6px;background:var(--surface);
+border:1px solid var(--border);color:var(--muted);cursor:pointer;font-size:.85rem;font-weight:500;transition:all .3s;font-family:var(--font)}
+.scenario-tab.active,.scenario-tab:hover{border-color:var(--accent);
+color:var(--accent);background:rgba(0,212,255,.05)}
+
+/* Scenario card */
+.scenario-title-bar{text-align:center;margin-bottom:40px}
+.scenario-title-bar .sc-label{font-size:.75rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:8px}
+.scenario-title-bar h3{font-size:1.8rem;font-weight:700;margin-bottom:8px}
+.scenario-title-bar .sc-desc{color:var(--muted);font-size:.95rem;max-width:700px;margin:0 auto}
+
+/* 5-step flow */
+.steps-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:40px;position:relative}
+.step-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+padding:20px 16px;display:flex;flex-direction:column;position:relative;transition:border-color .3s}
+.step-card:hover{border-color:rgba(0,212,255,.3)}
+
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--bg);
+font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;margin-bottom:12px;flex-shrink:0}
+
+.step-card h4{font-size:.9rem;font-weight:700;margin-bottom:6px;line-height:1.3}
+.step-card .step-desc{font-size:.8rem;color:var(--muted);line-height:1.5;margin-bottom:16px}
+
+/* Step arrow between cards */
+.step-card:not(:last-child)::after{content:'›';position:absolute;right:-12px;top:50%;
+transform:translateY(-50%);color:var(--accent);font-size:1.4rem;font-weight:700;z-index:2}
+
+/* Mockup area inside step */
+.step-mockup{flex:1;background:rgba(10,14,23,.6);border:1px solid var(--border);
+border-radius:6px;padding:12px;font-size:.7rem;min-height:180px;display:flex;flex-direction:column}
+
+/* Step status line */
+.step-status{display:flex;align-items:center;gap:6px;margin-top:12px;font-size:.7rem;color:var(--muted)}
+.step-status .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.step-status .dot.blue{background:var(--accent)}
+.step-status .dot.green{background:var(--success)}
+.step-status .dot.red{background:var(--danger)}
+.step-status .dot.purple{background:#A78BFA}
+
+/* Mockup internals */
+.mock-label{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;font-weight:600}
+.mock-row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(30,41,59,.5);gap:8px}
+.mock-row:last-child{border:none}
+.mock-key{color:var(--muted);white-space:nowrap;flex-shrink:0}
+.mock-val{color:var(--text);font-family:var(--mono);font-size:.7rem;text-align:right}
+.mock-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:.6rem;font-weight:600}
+.mock-badge.low{background:rgba(16,185,129,.15);color:var(--success)}
+.mock-badge.high{background:rgba(239,68,68,.15);color:var(--danger)}
+.mock-badge.critical{background:rgba(239,68,68,.2);color:#FF6B6B}
+
+/* Risk score big number */
+.risk-big{font-size:2.2rem;font-weight:800;font-family:var(--mono);line-height:1}
+.risk-big.critical{color:var(--danger)}
+
+/* Alert box */
+.mock-alert{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
+border-radius:6px;padding:8px;margin-top:8px;font-size:.65rem}
+.mock-alert .alert-icon{color:var(--danger);font-weight:700}
+
+/* Evidence list */
+.evidence-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:.65rem}
+.evidence-row .ev-icon{width:14px;height:14px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.5rem;margin-right:6px}
+
+/* SAR button */
+.mock-btn{display:inline-block;padding:4px 12px;background:var(--accent);color:var(--bg);
+border-radius:4px;font-size:.6rem;font-weight:600;cursor:default;margin-top:4px}
+
+/* Scenario summary bar */
+.scenario-summary{display:flex;align-items:center;gap:32px;padding:32px;
+background:var(--surface);border:1px solid var(--border);border-radius:var(--radius)}
+.scenario-summary .sum-text{flex:1;min-width:280px}
+.scenario-summary .sum-text h4{font-size:1.2rem;font-weight:700;margin-bottom:8px}
+.scenario-summary .sum-text p{font-size:.85rem;color:var(--muted);line-height:1.6}
+.sum-features{display:flex;gap:24px;flex-wrap:wrap;flex:2}
+.sum-feature{text-align:center;min-width:120px}
+.sum-feature .sf-icon{font-size:1.5rem;margin-bottom:4px;color:var(--accent)}
+.sum-feature .sf-title{font-size:.75rem;font-weight:600;margin-bottom:2px}
+.sum-feature .sf-desc{font-size:.75rem;color:var(--muted)}
+
+/* Graph nodes (CSS-drawn) */
+.graph-container{position:relative;width:100%;height:130px}
+.graph-node{position:absolute;width:22px;height:22px;border-radius:50%;display:flex;
+align-items:center;justify-content:center;font-size:.45rem;font-weight:700;
+border:2px solid;z-index:2}
+.graph-node.account{background:rgba(0,212,255,.15);border-color:var(--accent);color:var(--accent)}
+.graph-node.company{background:rgba(245,158,11,.15);border-color:var(--warning);color:var(--warning)}
+.graph-node.person{background:rgba(16,185,129,.15);border-color:var(--success);color:var(--success)}
+.graph-node.flagged{background:rgba(239,68,68,.2);border-color:var(--danger);color:var(--danger)}
+.graph-node.device{background:rgba(167,139,250,.15);border-color:#A78BFA;color:#A78BFA}
+.graph-node.center{width:28px;height:28px;font-size:.5rem;box-shadow:0 0 12px rgba(239,68,68,.4)}
+.graph-line{position:absolute;height:1px;background:rgba(148,163,184,.2);z-index:1;transform-origin:left center}
+
+/* Responsive */
+@media(max-width:1024px){
+.steps-flow{grid-template-columns:repeat(3,1fr)}
+.step-card:nth-child(3)::after{display:none}
+.scenario-summary{flex-direction:column;text-align:center}
+}
+@media(max-width:768px){
+.steps-flow{grid-template-columns:1fr}
+.step-card::after{display:none!important}
+.scenario-summary{padding:20px}
+.sum-features{justify-content:center}
+.scenario-tabs{gap:6px}
+.scenario-tab{padding:8px 14px;font-size:.8rem}
+}
+
+
+.nav{position:fixed;top:0;left:0;width:100%;z-index:1000;
+background:rgba(10,14,23,.85);backdrop-filter:blur(16px);
+border-bottom:1px solid var(--border);transition:background .3s}
+.nav-inner{max-width:1200px;margin:0 auto;display:flex;
+align-items:center;justify-content:space-between;padding:0 24px;height:64px}
+.nav-logo{font-weight:700;font-size:1.25rem;letter-spacing:0;
+color:var(--text);font-family:var(--mono);display:flex;align-items:baseline;gap:0;cursor:pointer}
+.nav-logo .logo-layer{color:var(--text);font-weight:300;letter-spacing:1px}
+.nav-logo .logo-dot{color:var(--accent);font-weight:700;margin:0 1px}
+.nav-logo .logo-one{color:var(--accent);font-weight:700;letter-spacing:1px}
+.nav-logo span.logo-sub{color:var(--muted);font-weight:400;margin-left:10px;font-size:.7rem;font-family:var(--font);letter-spacing:.5px;opacity:.7}
+.nav-right{display:flex;align-items:center;gap:20px}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{color:var(--muted);font-size:.85rem;font-weight:500;
+transition:color .2s;letter-spacing:.3px;white-space:nowrap}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+
+/* Language Selector */
+.lang-selector{position:relative}
+.lang-btn{background:var(--surface);border:1px solid var(--border);border-radius:6px;
+padding:6px 12px;color:var(--text);font-size:.8rem;cursor:pointer;display:flex;
+align-items:center;gap:6px;transition:border-color .2s}
+.lang-btn:hover{border-color:var(--accent)}
+.lang-btn .flag{font-size:1rem}
+.lang-btn .arrow{font-size:.6rem;color:var(--muted);transition:transform .2s}
+.lang-selector:focus-within .lang-btn .arrow,.lang-selector.open .lang-btn .arrow{transform:rotate(180deg)}
+.lang-dropdown{position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);
+border:1px solid var(--border);border-radius:6px;overflow:hidden;display:none;
+min-width:150px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:100}
+.lang-selector:focus-within .lang-dropdown,.lang-selector.open .lang-dropdown{display:block}
+.lang-option{padding:10px 14px;display:flex;align-items:center;gap:8px;
+font-size:.85rem;cursor:pointer;transition:background .2s;color:var(--text)}
+.lang-option:hover{background:rgba(0,212,255,.06)}
+.lang-option.active{color:var(--accent);background:rgba(0,212,255,.04)}
+.lang-option .flag{font-size:1.1rem}
+
+.nav-toggle{display:none;background:none;border:none;color:var(--text);
+font-size:1.5rem;cursor:pointer}
+
+@media(max-width:768px){
+.nav-links{display:none;position:absolute;top:64px;left:0;width:100%;
+flex-direction:column;background:rgba(10,14,23,.97);padding:16px 24px;gap:16px;
+border-bottom:1px solid var(--border)}
+.nav-links.open{display:flex}
+.nav-toggle{display:block}
+.nav-right{gap:12px}
+.lang-btn span.lang-name{display:none}
+.logo-sub{display:none !important}
+}
+
+/* ── HERO ── */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;
+justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;top:0;left:0;width:120%;height:120%;
+top:-10%;left:-10%;
+background-size:cover;background-position:center;
+opacity:.18;
+animation:heroDrift 35s ease-in-out infinite alternate}
+@keyframes heroDrift{
+0%{transform:translate(0,0) scale(1)}
+33%{transform:translate(2%,-1%) scale(1.03)}
+66%{transform:translate(-1%,2%) scale(1.01)}
+100%{transform:translate(1%,-2%) scale(1.04)}
+}
+.hero-overlay{position:absolute;top:0;left:0;width:100%;height:100%;
+background:linear-gradient(180deg,rgba(10,14,23,.5) 0%,rgba(10,14,23,.88) 100%)}
+.hero-content{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:800px}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:700;
+line-height:1.1;margin-bottom:20px;letter-spacing:-1px}
+.hero h1 em{font-style:normal;color:var(--accent);
+text-shadow:0 0 40px rgba(0,212,255,.35)}
+.hero-brand{font-family:var(--mono);font-size:clamp(.9rem,2vw,1.1rem);
+letter-spacing:3px;color:var(--muted);margin-bottom:24px;font-weight:300}
+.hero-brand b{color:var(--accent);font-weight:700}
+.hero p{font-size:clamp(1rem,2vw,1.25rem);color:var(--muted);
+max-width:600px;margin:0 auto 36px}
+.btn{display:inline-block;padding:14px 36px;border-radius:6px;
+font-weight:600;font-size:.95rem;cursor:pointer;transition:all .25s;border:none;
+letter-spacing:.5px}
+.btn-primary{background:var(--accent);color:var(--bg);
+box-shadow:0 0 24px rgba(0,212,255,.3)}
+.btn-primary:hover{background:#33DFFF;box-shadow:0 0 40px rgba(0,212,255,.5);
+transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--accent);
+border:1.5px solid var(--accent)}
+.btn-outline:hover{background:rgba(0,212,255,.1)}
+.scroll-indicator{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;
+color:var(--muted);font-size:.75rem;letter-spacing:1px;animation:floatY 2s ease-in-out infinite}
+.scroll-indicator .arrow{width:20px;height:20px;border-right:2px solid var(--muted);
+border-bottom:2px solid var(--muted);transform:rotate(45deg)}
+@keyframes floatY{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+
+/* ── SECTIONS ── */
+section{padding:100px 24px}
+.container{max-width:1200px;margin:0 auto}
+.section-label{font-family:var(--mono);font-size:.8rem;color:var(--accent);
+letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;
+margin-bottom:16px;letter-spacing:-.5px}
+.section-sub{color:var(--muted);font-size:1.05rem;max-width:640px;margin-bottom:56px}
+
+/* ── CAPABILITIES GRID ── */
+.cap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px}
+.cap-card{background:var(--surface);border:1px solid var(--border);
+border-radius:var(--radius);padding:28px 24px;
+transition:border-color .3s,box-shadow .3s,transform .3s}
+.cap-card:hover{border-color:var(--accent);
+box-shadow:0 0 24px var(--accentGlow);transform:translateY(-3px)}
+.cap-icon{font-size:1.6rem;margin-bottom:12px;display:block}
+.cap-card h3{font-size:1rem;font-weight:600;margin-bottom:6px}
+.cap-card p{font-size:.87rem;color:var(--muted);line-height:1.5}
+.cap-check{color:var(--success);font-family:var(--mono);font-size:.75rem;
+margin-top:10px;letter-spacing:.5px}
+
+/* ── DETECTION PATTERNS ── */
+.detect-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.detect-category{margin-bottom:40px}
+.detect-category h3{font-size:1.1rem;font-weight:600;margin-bottom:20px;
+display:flex;align-items:center;gap:8px}
+.detect-category h3 .cat-icon{font-size:1.3rem}
+.detect-category h3 .cat-count{font-family:var(--mono);font-size:.75rem;
+color:var(--accent);background:rgba(0,212,255,.08);padding:2px 10px;border-radius:12px}
+.detect-card{background:var(--surface);border:1px solid var(--border);
+border-radius:var(--radius);padding:18px 16px;
+transition:border-color .3s,box-shadow .3s,transform .3s;display:flex;gap:12px;align-items:flex-start}
+.detect-card:hover{border-color:var(--accent);
+box-shadow:0 0 20px var(--accentGlow);transform:translateY(-2px)}
+.detect-card .d-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+.detect-card .d-info h4{font-size:.88rem;font-weight:600;margin-bottom:3px}
+.detect-card .d-info p{font-size:.85rem;color:var(--muted);line-height:1.4}
+
+/* ── SECTORS ── */
+.sector-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+.sector-tab{padding:10px 20px;border-radius:6px;background:var(--surface);
+border:1px solid var(--border);color:var(--muted);font-size:.85rem;
+font-weight:500;cursor:pointer;transition:all .25s}
+.sector-tab.active,.sector-tab:hover{border-color:var(--accent);
+color:var(--accent);background:rgba(0,212,255,.06)}
+.sector-panel{display:none;animation:fadeUp .4s ease}
+.sector-panel.active{display:block}
+.sector-features{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.sf-item{display:flex;gap:12px;align-items:flex-start;padding:16px;
+border-radius:var(--radius);background:rgba(17,24,39,.6);border:1px solid transparent;
+transition:border-color .3s}
+.sf-item:hover{border-color:var(--border)}
+.sf-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);
+flex-shrink:0;margin-top:7px;box-shadow:0 0 8px rgba(0,212,255,.4)}
+.sf-item h4{font-size:.9rem;font-weight:600;margin-bottom:2px}
+.sf-item p{font-size:.8rem;color:var(--muted)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── WHY LAYER.ONE ── */
+.compare-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.compare-table thead th{text-align:left;padding:14px 12px;font-size:.75rem;
+color:var(--accent);letter-spacing:1px;text-transform:uppercase;font-family:var(--mono);
+border-bottom:2px solid var(--accent);font-weight:600}
+.compare-table thead th:first-child{color:var(--muted)}
+.compare-table thead th.hl{background:rgba(0,212,255,.04)}
+.compare-table tbody td{padding:12px;border-bottom:1px solid var(--border);
+color:var(--muted);vertical-align:middle}
+.compare-table tbody td:first-child{color:var(--text);font-weight:500;font-size:.87rem}
+.compare-table tbody td.hl{background:rgba(0,212,255,.03)}
+.compare-table .check{color:var(--success);font-weight:700;font-size:1rem}
+.compare-table .partial{color:var(--warning);font-weight:700;font-size:1rem}
+.compare-table .cross{color:var(--danger);font-weight:700;font-size:1rem}
+.compare-table-wrapper{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface)}
+@media(max-width:768px){.compare-table{font-size:.75rem}
+.compare-table thead th,.compare-table tbody td{padding:8px 6px}}
+
+/* ── PIPELINE ── */
+.pipeline{display:flex;gap:0;overflow-x:auto;padding-bottom:16px}
+.pipe-step{flex:1;min-width:160px;text-align:center;position:relative;padding:24px 12px}
+.pipe-icon{width:56px;height:56px;border-radius:50%;background:var(--surface);
+border:2px solid var(--border);display:flex;align-items:center;justify-content:center;
+font-size:1.4rem;margin:0 auto 14px;transition:all .6s}
+.pipe-step.lit .pipe-icon{border-color:var(--accent);
+box-shadow:0 0 20px var(--accentGlow);background:rgba(0,212,255,.08)}
+.pipe-step h4{font-size:.85rem;font-weight:600;margin-bottom:4px}
+.pipe-step p{font-size:.75rem;color:var(--muted)}
+.pipe-arrow{position:absolute;right:-12px;top:46px;color:var(--border);
+font-size:1.2rem;transition:color .6s}
+.pipe-step.lit .pipe-arrow{color:var(--accent)}
+.pipe-step:last-child .pipe-arrow{display:none}
+.tech-highlights{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:16px;margin-top:48px}
+.th-card{padding:20px;border-left:3px solid var(--accent);
+background:var(--surface);border-radius:0 var(--radius) var(--radius) 0}
+.th-card h4{font-size:.9rem;font-weight:600;margin-bottom:4px}
+.th-card p{font-size:.8rem;color:var(--muted)}
+
+/* ── ARCHITECTURE DIAGRAM ── */
+.arch-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;padding:20px 0}
+.arch-node{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+padding:20px 16px;text-align:center;min-width:140px;max-width:170px;
+transition:all .3s;position:relative}
+.arch-node:hover{border-color:var(--accent);box-shadow:0 0 24px var(--accentGlow);transform:translateY(-3px)}
+.arch-node .a-icon{font-size:1.6rem;margin-bottom:8px;display:block}
+.arch-node h4{font-size:.82rem;font-weight:600;margin-bottom:4px}
+.arch-node p{font-size:.7rem;color:var(--muted);line-height:1.3}
+.arch-arrow{color:var(--accent);font-size:1.4rem;margin:0 6px;flex-shrink:0;
+font-family:var(--mono);opacity:.6}
+.arch-layer{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.arch-layer .arch-node{flex:0 1 160px}
+.arch-layer .arch-arrow{flex:0 0 auto}
+@media(max-width:1100px){
+.arch-layer{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;justify-items:center}
+.arch-layer .arch-arrow{display:none}
+.arch-layer .arch-node{flex:none;width:100%;max-width:220px}
+}
+@media(max-width:700px){
+.arch-layer{grid-template-columns:repeat(2,1fr)}
+}
+.arch-section-label{font-family:var(--mono);font-size:.7rem;color:var(--accent);
+letter-spacing:2px;text-transform:uppercase;text-align:center;margin-bottom:16px;opacity:.6}
+.arch-bottom{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+gap:16px;margin-top:32px;padding-top:24px;border-top:1px solid var(--border)}
+.arch-infra{padding:16px;background:rgba(0,212,255,.03);border:1px solid var(--border);
+border-radius:var(--radius);text-align:center}
+.arch-infra .a-icon{font-size:1.2rem;margin-bottom:6px;display:block}
+.arch-infra h4{font-size:.8rem;font-weight:600;margin-bottom:2px}
+.arch-infra p{font-size:.7rem;color:var(--muted)}
+@media(max-width:768px){
+.arch-layer{grid-template-columns:1fr !important}
+.arch-layer .arch-arrow{display:none}
+.arch-node{min-width:200px;max-width:100%}
+}
+
+/* ── NUMBERS ── */
+.numbers-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px;text-align:center}
+.num-card{padding:32px 16px}
+.num-value{font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--accent);
+font-family:var(--mono);letter-spacing:-1px;
+text-shadow:0 0 30px rgba(0,212,255,.25)}
+.num-label{font-size:.85rem;color:var(--muted);margin-top:6px}
+
+/* ── CERTS ── */
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;text-align:center}
+.cert-badge{padding:28px 16px;background:var(--surface);border:1px solid var(--border);
+border-radius:var(--radius);transition:all .3s}
+.cert-badge:hover{border-color:var(--accent);box-shadow:0 0 20px var(--accentGlow)}
+.cert-shield{width:52px;height:60px;margin:0 auto 12px;position:relative}
+.cert-shield svg{width:100%;height:100%}
+.cert-badge h4{font-size:.85rem;font-weight:600;margin-bottom:2px}
+.cert-badge p{font-size:.72rem;color:var(--muted)}
+
+/* ── CONTACT FORM ── */
+.contact-section{padding:80px 24px;
+background:linear-gradient(180deg,var(--bg) 0%,rgba(0,212,255,.04) 100%)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1000px;margin:0 auto}
+.contact-info h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;margin-bottom:12px}
+.contact-info p{color:var(--muted);margin-bottom:24px;font-size:1.05rem}
+.contact-info .ci-item{display:flex;align-items:center;gap:10px;margin-bottom:14px;
+color:var(--muted);font-size:.9rem}
+.contact-info .ci-item .ci-icon{color:var(--accent);font-size:1.1rem}
+.contact-form{display:flex;flex-direction:column;gap:16px}
+.contact-form input,.contact-form textarea{background:var(--surface);
+border:1px solid var(--border);border-radius:6px;padding:14px 16px;
+color:var(--text);font-family:var(--font);font-size:.9rem;transition:border-color .2s;outline:none}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--accent)}
+.contact-form input::placeholder,.contact-form textarea::placeholder{color:var(--muted);opacity:.6}
+.contact-form textarea{resize:vertical;min-height:100px}
+.contact-form .btn{width:100%;text-align:center}
+.form-note{font-size:.75rem;color:var(--muted);text-align:center;margin-top:4px}
+@media(max-width:768px){.contact-grid{grid-template-columns:1fr;gap:32px}}
+
+/* ── FOOTER ── */
+.footer-bottom{text-align:center;padding:24px;border-top:1px solid var(--border);
+color:var(--muted);font-size:.75rem}
+
+/* ── DIVIDER ── */
+.section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
+margin:0 auto;max-width:600px}
+
+/* ── REVEAL ── */
+.reveal{opacity:1;transform:translateY(0);transition:opacity .7s,transform .7s}
+.reveal.hidden{opacity:0;transform:translateY(30px)}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+section{padding:70px 20px}
+.cap-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.detect-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+.sector-features{grid-template-columns:1fr}
+.numbers-grid{grid-template-columns:repeat(3,1fr)}
+.certs-grid{grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:768px){
+section{padding:60px 16px}
+.cap-grid{grid-template-columns:1fr}
+.detect-grid{grid-template-columns:1fr 1fr}
+.numbers-grid{grid-template-columns:repeat(2,1fr)}
+.certs-grid{grid-template-columns:repeat(2,1fr)}
+.pipeline{flex-direction:column;align-items:center}
+.pipe-step{min-width:auto;width:100%}
+.pipe-arrow{display:none !important}
+.sector-tabs{gap:6px}
+.sector-tab{padding:8px 14px;font-size:.8rem}
+.hero h1{font-size:clamp(1.8rem,6vw,2.5rem)}
+.hero-brand{letter-spacing:2px;font-size:.8rem}
+.section-title{font-size:clamp(1.4rem,4vw,2rem)}
+.tech-highlights{grid-template-columns:1fr}
+}
+@media(max-width:480px){
+.detect-grid{grid-template-columns:1fr}
+.numbers-grid{grid-template-columns:1fr 1fr}
+.certs-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+<div class="nav-inner">
+<div class="nav-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+<span class="logo-layer">Layer</span><span class="logo-dot">.</span><span class="logo-one">ONE</span>
+<span class="logo-sub" style="display:none"></span>
+</div>
+<button class="nav-toggle" id="navToggle" aria-label="Menu">&#9776;</button>
+<div class="nav-right">
+<ul class="nav-links" id="navLinks">
+<li><a href="#scenarios" data-i18n="nav_scenarios">Scenarios</a></li>
+<li><a href="#capabilities" data-i18n="nav_capabilities">Capabilities</a></li>
+<li><a href="#detection" data-i18n="nav_detection">Detection</a></li>
+<li><a href="#solutions" data-i18n="nav_solutions">Solutions</a></li>
+<li><a href="#why-us" data-i18n="nav_why">Why Layer.ONE</a></li>
+<li><a href="#architecture" data-i18n="nav_architecture">Architecture</a></li>
+<li><a href="#contact" class="btn btn-outline" style="padding:8px 20px;font-size:.8rem" data-i18n="nav_demo">Request Demo</a></li>
+</ul>
+<div class="lang-selector" id="langSelector" tabindex="0">
+<button class="lang-btn" id="langBtn">
+<span class="flag">🇬🇧</span>
+<span class="lang-name">EN</span>
+<span class="arrow">▼</span>
+</button>
+<div class="lang-dropdown" id="langDropdown">
+<div class="lang-option active" data-lang="en"><span class="flag">🇬🇧</span> English</div>
+<div class="lang-option" data-lang="tr"><span class="flag">🇹🇷</span> Türkçe</div>
+</div>
+</div>
+</div>
+</div>
+</nav>
+
+<section class="hero" id="hero">
+<div class="hero-bg" id="heroBg"></div>
+<div class="hero-overlay"></div>
+<div class="hero-content">
+<div class="hero-brand" data-i18n="hero_brand">Financial Crime Intelligence Platform</div>
+<h1 data-i18n="hero_title">Financial Crime<br><em>Stops Here.</em></h1>
+<p data-i18n="hero_sub">AI-powered intelligence platform that detects money laundering, fraud networks, and financial crime in real time. Deployed on your infrastructure. Under your control.</p>
+<a href="#contact" class="btn btn-primary" data-i18n="hero_cta">Request a Demo</a>
+</div>
+<div class="scroll-indicator" onclick="document.getElementById('scenarios').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+<span>SCROLL</span>
+<div class="arrow"></div>
+</div>
+</section>
+
+<!-- INVESTIGATION SCENARIOS -->
+<section id="scenarios" class="scenarios-section">
+<div class="scenarios-header">
+<div class="label" data-i18n="scenarios_label">Investigation Scenarios</div>
+<h2 data-i18n="scenarios_title">See Layer.ONE in Action</h2>
+<p data-i18n="scenarios_subtitle">Real-world scenarios showing how Layer.ONE transforms raw data into actionable intelligence — from first alert to case resolution.</p>
+</div>
+
+<div class="scenario-tabs reveal">
+<button class="scenario-tab active" data-scenario="1" data-i18n="sc1_tab">🔍 Hidden Laundering</button>
+<button class="scenario-tab" data-scenario="2" data-i18n="sc2_tab">🧾 Invoice Fraud</button>
+<button class="scenario-tab" data-scenario="3" data-i18n="sc3_tab">👥 Mule Network</button>
+</div>
+
+<div class="scenario-panels" id="scenarioPanels">
+
+<!-- ═══ SCENARIO 1: Hidden Laundering Network ═══ -->
+<div class="scenario-panel active" data-scenario-panel="1">
+<div class="scenario-title-bar">
+<div class="sc-label" data-i18n="sc1_label">Investigation Scenario 01</div>
+<h3 data-i18n="sc1_title">A Hidden Laundering Network</h3>
+<div class="sc-desc" data-i18n="sc1_desc">What begins as a routine wire transfer reveals a coordinated financial crime operation spanning 3 countries and 14 accounts.</div>
+</div>
+
+<div class="steps-flow">
+
+<!-- STEP 1 -->
+<div class="step-card">
+<div class="step-num">1</div>
+<h4 data-i18n="sc1_s1_title">Initial Transaction</h4>
+<p class="step-desc" data-i18n="sc1_s1_desc">A mid-size wire transfer enters the system. Nothing unusual at first glance.</p>
+<div class="step-mockup">
+<div class="mock-label">Transaction Monitor</div>
+<div class="mock-row"><span class="mock-key">TX ID</span><span class="mock-val">TRX-9F28X7</span></div>
+<div class="mock-row"><span class="mock-key">Amount</span><span class="mock-val">$48,250.00</span></div>
+<div class="mock-row"><span class="mock-key">From</span><span class="mock-val">Meridian Holdings LLC</span></div>
+<div class="mock-row"><span class="mock-key">To</span><span class="mock-val">Apex Trading FZE</span></div>
+<div class="mock-row"><span class="mock-key">Route</span><span class="mock-val">US → UAE → Turkey</span></div>
+<div class="mock-row"><span class="mock-key">Time</span><span class="mock-val">10:24:19</span></div>
+<div class="mock-row"><span class="mock-key">Risk Score</span><span class="mock-val">23 <span class="mock-badge low">Low Risk</span></span></div>
+<div style="margin-top:auto;padding-top:8px;display:flex;align-items:center;gap:6px;font-size:.6rem;color:var(--muted)">
+<span style="font-size:.8rem">🏦</span><span>────────</span><span style="font-size:.8rem">🏦</span>
+</div>
+</div>
+<div class="step-status"><span class="dot blue"></span> Transaction ingested</div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-card">
+<div class="step-num">2</div>
+<h4 data-i18n="sc1_s2_title">Hidden Connections Appear</h4>
+<p class="step-desc" data-i18n="sc1_s2_desc">Layer.ONE links the sender to multiple accounts, shell companies, and previously flagged entities across jurisdictions.</p>
+<div class="step-mockup">
+<div class="mock-label">Entity Graph</div>
+<div class="graph-container">
+<svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" xmlns="http://www.w3.org/2000/svg">
+<!-- Center to accounts -->
+<line x1="50%" y1="50%" x2="14%" y2="22%" stroke="rgba(0,212,255,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="81%" y2="17%" stroke="rgba(0,212,255,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="11%" y2="77%" stroke="rgba(0,212,255,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="88%" y2="72%" stroke="rgba(0,212,255,.2)" stroke-width="1"/>
+<!-- Center to companies -->
+<line x1="50%" y1="50%" x2="36%" y2="12%" stroke="rgba(245,158,11,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="71%" y2="85%" stroke="rgba(245,158,11,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="26%" y2="92%" stroke="rgba(245,158,11,.2)" stroke-width="1"/>
+<!-- Center to persons -->
+<line x1="50%" y1="50%" x2="81%" y2="47%" stroke="rgba(16,185,129,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="21%" y2="49%" stroke="rgba(16,185,129,.2)" stroke-width="1"/>
+<!-- Center to device -->
+<line x1="50%" y1="50%" x2="56%" y2="97%" stroke="rgba(167,139,250,.2)" stroke-width="1"/>
+<!-- Cross connections (secondary) -->
+<line x1="14%" y1="22%" x2="36%" y2="12%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="81%" y1="17%" x2="81%" y2="47%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="26%" y1="92%" x2="11%" y2="77%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="71%" y1="85%" x2="88%" y2="72%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="21%" y1="49%" x2="14%" y2="22%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+</svg>
+<!-- Center node (flagged) -->
+<div class="graph-node flagged center" style="left:calc(50% - 14px);top:calc(50% - 14px)" title="Meridian Holdings LLC">⚠</div>
+<!-- Account nodes -->
+<div class="graph-node account" style="left:8%;top:15%" title="Account ****3921">A</div>
+<div class="graph-node account" style="left:75%;top:10%" title="Account ****8812">A</div>
+<div class="graph-node account" style="left:5%;top:70%" title="Account ****5504">A</div>
+<div class="graph-node account" style="left:82%;top:65%" title="Account ****7719">A</div>
+<!-- Company nodes -->
+<div class="graph-node company" style="left:30%;top:5%" title="Apex Trading FZE">C</div>
+<div class="graph-node company" style="left:65%;top:78%" title="Crescent Logistics Ltd">C</div>
+<div class="graph-node company" style="left:20%;top:85%" title="Deniz Export A.Ş.">C</div>
+<!-- Person nodes -->
+<div class="graph-node person" style="left:75%;top:40%" title="Emre K.">P</div>
+<div class="graph-node person" style="left:15%;top:42%" title="Viktor S.">P</div>
+<!-- Device node -->
+<div class="graph-node device" style="left:50%;top:90%" title="Device: iPhone (Dubai)">D</div>
+</div>
+<div style="display:flex;gap:12px;margin-top:4px;font-size:.55rem;color:var(--muted);flex-wrap:wrap">
+<span><span style="color:var(--accent)">●</span> Accounts</span>
+<span><span style="color:var(--warning)">●</span> Companies</span>
+<span><span style="color:var(--success)">●</span> People</span>
+<span><span style="color:#A78BFA">●</span> Devices</span>
+</div>
+</div>
+<div class="step-status"><span class="dot green"></span> 128 connections identified</div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-card">
+<div class="step-num">3</div>
+<h4 data-i18n="sc1_s3_title">Pattern Detection</h4>
+<p class="step-desc" data-i18n="sc1_s3_desc">The system detects fan-out behavior, rapid movement, and invoice laundering indicators across the network.</p>
+<div class="step-mockup">
+<div class="mock-label">Detected Patterns</div>
+<div class="graph-container">
+<svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" xmlns="http://www.w3.org/2000/svg">
+<!-- Center to flagged nodes -->
+<line x1="50%" y1="50%" x2="36%" y2="32%" stroke="rgba(239,68,68,.3)" stroke-width="1.5"/>
+<line x1="50%" y1="50%" x2="71%" y2="27%" stroke="rgba(239,68,68,.3)" stroke-width="1.5"/>
+<line x1="50%" y1="50%" x2="31%" y2="72%" stroke="rgba(239,68,68,.3)" stroke-width="1.5"/>
+<!-- Center to accounts -->
+<line x1="50%" y1="50%" x2="16%" y2="17%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="86%" y2="19%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="14%" y2="87%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="88%" y2="82%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<!-- Flagged to accounts (fan-out pattern) -->
+<line x1="36%" y1="32%" x2="16%" y2="17%" stroke="rgba(239,68,68,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+<line x1="71%" y1="27%" x2="86%" y2="19%" stroke="rgba(239,68,68,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+<line x1="31%" y1="72%" x2="14%" y2="87%" stroke="rgba(239,68,68,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+<!-- Companies -->
+<line x1="50%" y1="50%" x2="66%" y2="87%" stroke="rgba(245,158,11,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="51%" y2="12%" stroke="rgba(245,158,11,.2)" stroke-width="1"/>
+</svg>
+<!-- Central red cluster -->
+<div class="graph-node flagged center" style="left:calc(50% - 14px);top:calc(50% - 14px)">⚠</div>
+<div class="graph-node flagged" style="left:30%;top:25%">!</div>
+<div class="graph-node flagged" style="left:65%;top:20%">!</div>
+<div class="graph-node flagged" style="left:25%;top:65%">!</div>
+<div class="graph-node account" style="left:10%;top:10%">A</div>
+<div class="graph-node account" style="left:80%;top:12%">A</div>
+<div class="graph-node account" style="left:8%;top:80%">A</div>
+<div class="graph-node account" style="left:82%;top:75%">A</div>
+<div class="graph-node company" style="left:60%;top:80%">C</div>
+<div class="graph-node company" style="left:45%;top:5%">C</div>
+</div>
+<div style="margin-top:4px">
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Fan-out (1→14 accounts)</div>
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Rapid movement (&lt;4 hours)</div>
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Structuring ($9K–$9.9K splits)</div>
+<div style="display:flex;align-items:center;gap:4px;font-size:.6rem"><span style="color:var(--warning)">●</span> Shell company layering</div>
+</div>
+</div>
+<div class="step-status"><span class="dot red"></span> 3 high-risk patterns detected</div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-card">
+<div class="step-num">4</div>
+<h4 data-i18n="sc1_s4_title">Risk Escalation</h4>
+<p class="step-desc" data-i18n="sc1_s4_desc">Network risk exceeds institutional thresholds. The transaction is automatically escalated for review.</p>
+<div class="step-mockup">
+<div class="mock-label">Risk Score</div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+<span class="risk-big critical">92</span>
+<span class="mock-badge critical">Critical</span>
+</div>
+<!-- Mini chart -->
+<div style="display:flex;align-items:flex-end;gap:2px;height:50px;margin-bottom:8px">
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:20%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:22%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:25%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:23%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:30%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:35%"></div>
+<div style="flex:1;background:var(--warning);border-radius:2px 2px 0 0;height:55%"></div>
+<div style="flex:1;background:var(--warning);border-radius:2px 2px 0 0;height:65%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:80%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:100%"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:.5rem;color:var(--muted);margin-bottom:12px">
+<span>10:10</span><span>10:15</span><span>10:20</span><span>10:24</span>
+</div>
+<div class="mock-alert">
+<span class="alert-icon">⚠ Transaction Escalated</span><br>
+<span style="color:var(--muted)">Auto-escalated by Layer.ONE</span><br>
+<span style="color:var(--muted)">10:24:32</span>
+</div>
+</div>
+<div class="step-status"><span class="dot red"></span> Alert sent to investigators</div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-card">
+<div class="step-num">5</div>
+<h4 data-i18n="sc1_s5_title">Investigator Workspace</h4>
+<p class="step-desc" data-i18n="sc1_s5_desc">Analysts open a live investigation graph with full evidence chain and AI-generated SAR draft.</p>
+<div class="step-mockup">
+<div class="mock-label">Evidence Chain</div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(0,212,255,.15);color:var(--accent)">A</span>Accounts</span><span class="mock-val">14</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(245,158,11,.15);color:var(--warning)">C</span>Companies</span><span class="mock-val">3</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(167,139,250,.15);color:#A78BFA">D</span>Devices</span><span class="mock-val">2</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(16,185,129,.15);color:var(--success)">T</span>Transactions</span><span class="mock-val">7</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(239,68,68,.15);color:var(--danger)">I</span>Invoices</span><span class="mock-val">4</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(148,163,184,.15);color:var(--muted)">E</span>Related Entities</span><span class="mock-val">12</span></div>
+<div style="margin-top:auto;padding-top:8px;border-top:1px solid var(--border)">
+<div class="mock-label">AI SAR Draft</div>
+<div style="display:flex;align-items:center;gap:6px;font-size:.6rem;color:var(--muted);margin-bottom:6px">
+📄 <span style="font-family:var(--mono)">SAR_DRAFT_9F28X7.pdf</span>
+</div>
+<span class="mock-btn">Preview Draft</span>
+</div>
+</div>
+<div class="step-status"><span class="dot purple"></span> Investigation in progress</div>
+</div>
+
+</div><!-- /steps-flow -->
+
+<!-- Summary bar -->
+<div class="scenario-summary">
+<div class="sum-text">
+<h4 data-i18n="sc1_sum_title">From Detection to Action. All in One Platform.</h4>
+<p data-i18n="sc1_sum_desc">Layer.ONE connects the dots others miss. We don't just alert — we reveal the full picture, explain the why, and empower investigators to act with confidence.</p>
+</div>
+<div class="sum-features">
+<div class="sum-feature">
+<div class="sf-icon">⚡</div>
+<div class="sf-title" data-i18n="sc1_f1_title">Real-time Detection</div>
+<div class="sf-desc" data-i18n="sc1_f1_desc">Streaming analytics and pattern detection</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">🕸️</div>
+<div class="sf-title" data-i18n="sc1_f2_title">Graph Intelligence</div>
+<div class="sf-desc" data-i18n="sc1_f2_desc">Entity resolution and network analysis</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">🔍</div>
+<div class="sf-title" data-i18n="sc1_f3_title">Investigation Suite</div>
+<div class="sf-desc" data-i18n="sc1_f3_desc">Forensic tools and collaboration</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">📋</div>
+<div class="sf-title" data-i18n="sc1_f4_title">Regulatory Reporting</div>
+<div class="sf-desc" data-i18n="sc1_f4_desc">SAR automation and compliance</div>
+</div>
+</div>
+</div>
+
+</div><!-- /scenario-panel 1 -->
+
+<!-- ═══ SCENARIO 2: Invoice Fraud Network ═══ -->
+<div class="scenario-panel" data-scenario-panel="2">
+<div class="scenario-title-bar">
+<div class="sc-label" data-i18n="sc2_label">Investigation Scenario 02</div>
+<h3 data-i18n="sc2_title">An Invoice Fraud Network</h3>
+<div class="sc-desc" data-i18n="sc2_desc">Fake invoices. Shell companies. Circular flows. Layer.ONE connects the dots behind trade-based financial crime.</div>
+</div>
+
+<div class="steps-flow">
+
+<!-- STEP 1 -->
+<div class="step-card">
+<div class="step-num">1</div>
+<h4 data-i18n="sc2_s1_title">Suspicious Invoice Detected</h4>
+<p class="step-desc" data-i18n="sc2_s1_desc">A corporate client submits an invoice for payment to a supplier. The system flags unusual indicators.</p>
+<div class="step-mockup">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+<div class="mock-label" style="margin:0">Invoice</div>
+<span class="mock-badge high">HIGH RISK</span>
+</div>
+<div class="mock-row"><span class="mock-key">Invoice ID</span><span class="mock-val">INV-2024-77834</span></div>
+<div class="mock-row"><span class="mock-key">Amount</span><span class="mock-val">$248,500.00</span></div>
+<div class="mock-row"><span class="mock-key">Supplier</span><span class="mock-val">Global Export Solutions LTD</span></div>
+<div class="mock-row"><span class="mock-key">Country</span><span class="mock-val">UAE</span></div>
+<div class="mock-row"><span class="mock-key">Risk Score</span><span class="mock-val">28 <span class="mock-badge low">Low Risk</span></span></div>
+<div style="margin-top:10px;border-top:1px solid var(--border);padding-top:8px">
+<div class="mock-label">Risk Indicators</div>
+<div style="font-size:.6rem;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="color:var(--danger)">●</span> New supplier</div>
+<div style="font-size:.6rem;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="color:var(--danger)">●</span> High amount vs. history</div>
+<div style="font-size:.6rem;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="color:var(--warning)">●</span> Round amount</div>
+<div style="font-size:.6rem;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="color:var(--warning)">●</span> Unusual payment routing</div>
+<div style="font-size:.6rem;display:flex;align-items:center;gap:4px"><span style="color:var(--accent)">●</span> <span data-i18n="sc2_s1_narr">Description vs sector mismatch <span style="opacity:.6">(batch flagged)</span></span></div>
+</div>
+</div>
+<div class="step-status"><span class="dot blue"></span> Invoice ingested</div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-card">
+<div class="step-num">2</div>
+<h4 data-i18n="sc2_s2_title">Entity Resolution & Linking</h4>
+<p class="step-desc" data-i18n="sc2_s2_desc">Layer.ONE links the supplier to related entities, bank accounts, directors, and previous counterparties.</p>
+<div class="step-mockup">
+<div class="mock-label">Entity Graph</div>
+<div class="graph-container">
+<svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" xmlns="http://www.w3.org/2000/svg">
+<line x1="50%" y1="50%" x2="15%" y2="15%" stroke="rgba(245,158,11,.25)" stroke-width="1.5"/>
+<line x1="50%" y1="50%" x2="80%" y2="12%" stroke="rgba(245,158,11,.25)" stroke-width="1.5"/>
+<line x1="50%" y1="50%" x2="12%" y2="75%" stroke="rgba(0,212,255,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="85%" y2="70%" stroke="rgba(0,212,255,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="25%" y2="45%" stroke="rgba(16,185,129,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="78%" y2="42%" stroke="rgba(16,185,129,.2)" stroke-width="1"/>
+<line x1="50%" y1="50%" x2="50%" y2="90%" stroke="rgba(167,139,250,.2)" stroke-width="1"/>
+<line x1="15%" y1="15%" x2="25%" y2="45%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="80%" y1="12%" x2="85%" y2="70%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="78%" y1="42%" x2="85%" y2="70%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+<line x1="12%" y1="75%" x2="25%" y2="45%" stroke="rgba(148,163,184,.1)" stroke-width="1" stroke-dasharray="3,3"/>
+</svg>
+<div class="graph-node company center" style="left:calc(50% - 14px);top:calc(50% - 14px);border-color:var(--warning);background:rgba(245,158,11,.2)" title="Global Export Solutions LTD">⚠</div>
+<div class="graph-node company" style="left:9%;top:8%" title="Crescent Import LLC">C</div>
+<div class="graph-node company" style="left:74%;top:5%" title="Horizon Trade FZE">C</div>
+<div class="graph-node account" style="left:6%;top:68%" title="Account ****6622">A</div>
+<div class="graph-node account" style="left:79%;top:63%" title="Account ****1190">A</div>
+<div class="graph-node person" style="left:19%;top:38%" title="Ahmad R. (Director)">P</div>
+<div class="graph-node person" style="left:72%;top:35%" title="Fatima S. (Signatory)">P</div>
+<div class="graph-node device" style="left:44%;top:83%" title="Shared IP: 185.23.xx.xx">D</div>
+</div>
+<div style="display:flex;gap:12px;margin-top:4px;font-size:.55rem;color:var(--muted);flex-wrap:wrap">
+<span><span style="color:var(--warning)">●</span> Companies</span>
+<span><span style="color:var(--accent)">●</span> Accounts</span>
+<span><span style="color:var(--success)">●</span> People</span>
+<span><span style="color:#A78BFA">●</span> Devices</span>
+</div>
+</div>
+<div class="step-status"><span class="dot green"></span> 67 connections identified</div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-card">
+<div class="step-num">3</div>
+<h4 data-i18n="sc2_s3_title">Fraud Pattern Detection</h4>
+<p class="step-desc" data-i18n="sc2_s3_desc">The system detects trade-based money laundering patterns and circular invoice flows.</p>
+<div class="step-mockup">
+<div class="mock-label">Detected Patterns</div>
+<div class="graph-container">
+<svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" xmlns="http://www.w3.org/2000/svg">
+<!-- Circular flow -->
+<line x1="30%" y1="20%" x2="70%" y2="20%" stroke="rgba(239,68,68,.3)" stroke-width="1.5"/>
+<line x1="70%" y1="20%" x2="70%" y2="70%" stroke="rgba(239,68,68,.3)" stroke-width="1.5"/>
+<line x1="70%" y1="70%" x2="30%" y2="70%" stroke="rgba(239,68,68,.3)" stroke-width="1.5"/>
+<line x1="30%" y1="70%" x2="30%" y2="20%" stroke="rgba(239,68,68,.3)" stroke-width="1.5"/>
+<!-- Center connections -->
+<line x1="50%" y1="45%" x2="30%" y2="20%" stroke="rgba(239,68,68,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+<line x1="50%" y1="45%" x2="70%" y2="20%" stroke="rgba(239,68,68,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+<line x1="50%" y1="45%" x2="70%" y2="70%" stroke="rgba(239,68,68,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+<line x1="50%" y1="45%" x2="30%" y2="70%" stroke="rgba(239,68,68,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+</svg>
+<div class="graph-node flagged center" style="left:calc(50% - 14px);top:calc(45% - 14px)">⚠</div>
+<div class="graph-node company" style="left:24%;top:13%" title="Buyer A">C</div>
+<div class="graph-node company" style="left:64%;top:13%" title="Supplier B">C</div>
+<div class="graph-node company" style="left:64%;top:63%" title="Intermediary C">C</div>
+<div class="graph-node company" style="left:24%;top:63%" title="Shell Co D">C</div>
+</div>
+<div style="margin-top:4px">
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Circular trading</div>
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Over-invoicing (+340%)</div>
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Layering via intermediaries</div>
+<div style="display:flex;align-items:center;gap:4px;font-size:.6rem"><span style="color:var(--warning)">●</span> High-risk jurisdictions</div>
+</div>
+</div>
+<div class="step-status"><span class="dot red"></span> 4 high-risk patterns detected</div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-card">
+<div class="step-num">4</div>
+<h4 data-i18n="sc2_s4_title">Risk Escalation</h4>
+<p class="step-desc" data-i18n="sc2_s4_desc">The risk score exceeds the institutional threshold. Payment is stopped automatically.</p>
+<div class="step-mockup">
+<div class="mock-label">Risk Score</div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+<span class="risk-big critical">94</span>
+<span class="mock-badge critical">Critical</span>
+</div>
+<div style="display:flex;align-items:flex-end;gap:2px;height:50px;margin-bottom:8px">
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:25%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:22%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:28%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:35%"></div>
+<div style="flex:1;background:var(--warning);border-radius:2px 2px 0 0;height:50%"></div>
+<div style="flex:1;background:var(--warning);border-radius:2px 2px 0 0;height:60%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:75%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:85%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:95%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:100%"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:.5rem;color:var(--muted);margin-bottom:12px">
+<span>09:00</span><span>09:15</span><span>09:30</span><span>10:00</span>
+</div>
+<div class="mock-alert">
+<span class="alert-icon">🛑 Payment Blocked</span><br>
+<span style="color:var(--muted)">Transaction automatically halted by Layer.ONE</span><br>
+<span style="color:var(--muted)">10:01:23</span>
+</div>
+</div>
+<div class="step-status"><span class="dot red"></span> Transaction blocked</div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-card">
+<div class="step-num">5</div>
+<h4 data-i18n="sc2_s5_title">Investigator Workspace</h4>
+<p class="step-desc" data-i18n="sc2_s5_desc">Analysts review the full network, supporting documents, and AI-generated SAR draft.</p>
+<div class="step-mockup">
+<div class="mock-label">Evidence</div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(239,68,68,.15);color:var(--danger)">I</span>Invoices</span><span class="mock-val">7</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(245,158,11,.15);color:var(--warning)">C</span>Contracts</span><span class="mock-val">3</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(0,212,255,.15);color:var(--accent)">P</span>Payments</span><span class="mock-val">19</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(16,185,129,.15);color:var(--success)">E</span>Entities</span><span class="mock-val">24</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(148,163,184,.15);color:var(--muted)">N</span>Notes</span><span class="mock-val">6</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(167,139,250,.15);color:#A78BFA">F</span>Files</span><span class="mock-val">14</span></div>
+<div style="margin-top:auto;padding-top:8px;border-top:1px solid var(--border)">
+<div class="mock-label">AI SAR Draft</div>
+<div style="display:flex;align-items:center;gap:6px;font-size:.6rem;color:var(--muted);margin-bottom:6px">
+📄 <span style="font-family:var(--mono)">SAR_2024_05_1147.pdf</span>
+</div>
+<span class="mock-btn">Preview Draft</span>
+</div>
+</div>
+<div class="step-status"><span class="dot purple"></span> Investigation in progress</div>
+</div>
+
+</div>
+
+<!-- Summary bar -->
+<div class="scenario-summary">
+<div class="sum-text">
+<h4 data-i18n="sc2_sum_title">Trade-based money laundering hides behind legitimate business.</h4>
+<p data-i18n="sc2_sum_desc">Layer.ONE analyzes entities, documents, payments, and relationships to uncover what traditional systems miss.</p>
+</div>
+<div class="sum-features">
+<div class="sum-feature">
+<div class="sf-icon">📄</div>
+<div class="sf-title" data-i18n="sc2_f1_title">Document Intelligence</div>
+<div class="sf-desc" data-i18n="sc2_f1_desc">Extracts and analyzes invoice and contract data at scale</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">🕸️</div>
+<div class="sf-title" data-i18n="sc2_f2_title">Network Analytics</div>
+<div class="sf-desc" data-i18n="sc2_f2_desc">Reveals hidden ownership structures and circular relationships</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">🧠</div>
+<div class="sf-title" data-i18n="sc2_f3_title">Behavioral AI</div>
+<div class="sf-desc" data-i18n="sc2_f3_desc">Detects abnormal trade patterns and pricing anomalies</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">📋</div>
+<div class="sf-title" data-i18n="sc2_f4_title">Regulatory Reporting</div>
+<div class="sf-desc" data-i18n="sc2_f4_desc">Generates compliant SARs with full evidence and audit trails</div>
+</div>
+</div>
+</div>
+
+</div><!-- /scenario-panel 2 -->
+
+<!-- ═══ SCENARIO 3: Mule Network Takedown ═══ -->
+<div class="scenario-panel" data-scenario-panel="3">
+<div class="scenario-title-bar">
+<div class="sc-label" data-i18n="sc3_label">Investigation Scenario 03</div>
+<h3 data-i18n="sc3_title">A Mule Network Takedown</h3>
+<div class="sc-desc" data-i18n="sc3_desc">Dozens of seemingly unrelated accounts. One recruiter. Crypto cashout. Layer.ONE maps the entire mule operation in minutes.</div>
+</div>
+
+<div class="steps-flow">
+
+<!-- STEP 1 -->
+<div class="step-card">
+<div class="step-num">1</div>
+<h4 data-i18n="sc3_s1_title">Unusual Account Activity</h4>
+<p class="step-desc" data-i18n="sc3_s1_desc">Multiple new accounts show identical deposit patterns. Same device fingerprint detected across 12 accounts.</p>
+<div class="step-mockup">
+<div class="mock-label">Activity Monitor</div>
+<div class="mock-row"><span class="mock-key">Accounts</span><span class="mock-val">12 flagged</span></div>
+<div class="mock-row"><span class="mock-key">Pattern</span><span class="mock-val">€990 deposits ×3/day</span></div>
+<div class="mock-row"><span class="mock-key">Device</span><span class="mock-val">iPhone 15 (IMEI ****4491)</span></div>
+<div class="mock-row"><span class="mock-key">Location</span><span class="mock-val">Berlin, DE</span></div>
+<div class="mock-row"><span class="mock-key">Period</span><span class="mock-val">14 days</span></div>
+<div class="mock-row"><span class="mock-key">Risk Score</span><span class="mock-val">31 <span class="mock-badge low">Low Risk</span></span></div>
+<div style="margin-top:auto;padding-top:8px;border-top:1px solid var(--border)">
+<div class="mock-label">Anomaly Flags</div>
+<div style="font-size:.6rem;display:flex;align-items:center;gap:4px;margin-bottom:3px"><span style="color:var(--warning)">●</span> Structuring (below €1K threshold)</div>
+<div style="font-size:.6rem;display:flex;align-items:center;gap:4px"><span style="color:var(--warning)">●</span> Shared device across accounts</div>
+</div>
+</div>
+<div class="step-status"><span class="dot blue"></span> Anomaly cluster detected</div>
+</div>
+
+<!-- STEP 2 -->
+<div class="step-card">
+<div class="step-num">2</div>
+<h4 data-i18n="sc3_s2_title">Network Expansion</h4>
+<p class="step-desc" data-i18n="sc3_s2_desc">Layer.ONE maps 47 mule accounts to 3 recruiters, 2 crypto exchanges, and a central coordinator.</p>
+<div class="step-mockup">
+<div class="mock-label">Mule Network Map</div>
+<div class="graph-container">
+<svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" xmlns="http://www.w3.org/2000/svg">
+<!-- Coordinator to recruiters -->
+<line x1="50%" y1="40%" x2="20%" y2="15%" stroke="rgba(239,68,68,.35)" stroke-width="2"/>
+<line x1="50%" y1="40%" x2="50%" y2="8%" stroke="rgba(239,68,68,.35)" stroke-width="2"/>
+<line x1="50%" y1="40%" x2="80%" y2="15%" stroke="rgba(239,68,68,.35)" stroke-width="2"/>
+<!-- Recruiters to mules -->
+<line x1="20%" y1="15%" x2="8%" y2="55%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="20%" y1="15%" x2="18%" y2="60%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="20%" y1="15%" x2="28%" y2="58%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="50%" y1="8%" x2="40%" y2="58%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="50%" y1="8%" x2="50%" y2="60%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="50%" y1="8%" x2="60%" y2="58%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="80%" y1="15%" x2="72%" y2="55%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="80%" y1="15%" x2="82%" y2="60%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<line x1="80%" y1="15%" x2="92%" y2="55%" stroke="rgba(0,212,255,.15)" stroke-width="1"/>
+<!-- Mules to crypto -->
+<line x1="28%" y1="58%" x2="30%" y2="88%" stroke="rgba(245,158,11,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+<line x1="60%" y1="58%" x2="70%" y2="88%" stroke="rgba(245,158,11,.15)" stroke-width="1" stroke-dasharray="2,2"/>
+</svg>
+<div class="graph-node flagged center" style="left:calc(50% - 14px);top:calc(40% - 14px)" title="Coordinator (Unknown)">⚠</div>
+<div class="graph-node person" style="left:14%;top:8%" title="Recruiter 1 — Oleg P.">R</div>
+<div class="graph-node person" style="left:44%;top:1%" title="Recruiter 2 — Dimitri K.">R</div>
+<div class="graph-node person" style="left:74%;top:8%" title="Recruiter 3 — Yusuf M.">R</div>
+<div class="graph-node account" style="left:2%;top:48%" title="Mule ****2201">M</div>
+<div class="graph-node account" style="left:12%;top:53%" title="Mule ****3318">M</div>
+<div class="graph-node account" style="left:22%;top:51%" title="Mule ****4405">M</div>
+<div class="graph-node account" style="left:34%;top:51%" title="Mule ****5512">M</div>
+<div class="graph-node account" style="left:44%;top:53%" title="Mule ****6629">M</div>
+<div class="graph-node account" style="left:54%;top:51%" title="Mule ****7736">M</div>
+<div class="graph-node account" style="left:66%;top:48%" title="Mule ****8801">M</div>
+<div class="graph-node account" style="left:76%;top:53%" title="Mule ****9918">M</div>
+<div class="graph-node account" style="left:86%;top:48%" title="Mule ****1025">M</div>
+<div class="graph-node company" style="left:24%;top:82%" title="Binance (Exchange)">₿</div>
+<div class="graph-node company" style="left:64%;top:82%" title="KuCoin (Exchange)">₿</div>
+</div>
+<div style="display:flex;gap:12px;margin-top:4px;font-size:.55rem;color:var(--muted);flex-wrap:wrap">
+<span><span style="color:var(--danger)">●</span> Coordinator</span>
+<span><span style="color:var(--success)">●</span> Recruiters</span>
+<span><span style="color:var(--accent)">●</span> Mule Accounts</span>
+<span><span style="color:var(--warning)">●</span> Crypto Exchanges</span>
+</div>
+</div>
+<div class="step-status"><span class="dot green"></span> 47 mule accounts mapped</div>
+</div>
+
+<!-- STEP 3 -->
+<div class="step-card">
+<div class="step-num">3</div>
+<h4 data-i18n="sc3_s3_title">Behavioral Analysis</h4>
+<p class="step-desc" data-i18n="sc3_s3_desc">AI detects coordinated timing: burst deposits, immediate ATM withdrawals, and crypto conversion within hours.</p>
+<div class="step-mockup">
+<div class="mock-label">Behavioral Patterns</div>
+<!-- Timeline bars -->
+<div style="margin-bottom:12px">
+<div style="font-size:.55rem;color:var(--muted);margin-bottom:4px">Daily Activity (47 accounts)</div>
+<div style="display:flex;align-items:flex-end;gap:1px;height:40px">
+<div style="flex:1;background:var(--accent);border-radius:1px 1px 0 0;height:30%;opacity:.6"></div>
+<div style="flex:1;background:var(--accent);border-radius:1px 1px 0 0;height:45%;opacity:.6"></div>
+<div style="flex:1;background:var(--danger);border-radius:1px 1px 0 0;height:100%"></div>
+<div style="flex:1;background:var(--danger);border-radius:1px 1px 0 0;height:95%"></div>
+<div style="flex:1;background:var(--danger);border-radius:1px 1px 0 0;height:90%"></div>
+<div style="flex:1;background:var(--accent);border-radius:1px 1px 0 0;height:20%;opacity:.6"></div>
+<div style="flex:1;background:var(--accent);border-radius:1px 1px 0 0;height:15%;opacity:.6"></div>
+<div style="flex:1;background:var(--danger);border-radius:1px 1px 0 0;height:85%"></div>
+<div style="flex:1;background:var(--danger);border-radius:1px 1px 0 0;height:92%"></div>
+<div style="flex:1;background:var(--accent);border-radius:1px 1px 0 0;height:10%;opacity:.6"></div>
+<div style="flex:1;background:var(--accent);border-radius:1px 1px 0 0;height:25%;opacity:.6"></div>
+<div style="flex:1;background:var(--danger);border-radius:1px 1px 0 0;height:88%"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:.45rem;color:var(--muted);margin-top:2px">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
+</div>
+</div>
+<div style="margin-top:4px">
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Burst deposits (09:00-09:30)</div>
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> ATM withdrawal (&lt;2 hours)</div>
+<div style="display:flex;align-items:center;gap:4px;margin-bottom:3px;font-size:.6rem"><span style="color:var(--danger)">●</span> Crypto conversion (&lt;4 hours)</div>
+<div style="display:flex;align-items:center;gap:4px;font-size:.6rem"><span style="color:var(--warning)">●</span> Weekend dormancy</div>
+</div>
+</div>
+<div class="step-status"><span class="dot red"></span> Coordinated behavior confirmed</div>
+</div>
+
+<!-- STEP 4 -->
+<div class="step-card">
+<div class="step-num">4</div>
+<h4 data-i18n="sc3_s4_title">Cross-Border Escalation</h4>
+<p class="step-desc" data-i18n="sc3_s4_desc">Risk score peaks. Multi-jurisdiction alert triggers simultaneous account freezes across 3 countries.</p>
+<div class="step-mockup">
+<div class="mock-label">Risk Score</div>
+<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+<span class="risk-big critical">97</span>
+<span class="mock-badge critical">Critical</span>
+</div>
+<div style="display:flex;align-items:flex-end;gap:2px;height:50px;margin-bottom:8px">
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:15%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:18%"></div>
+<div style="flex:1;background:var(--border);border-radius:2px 2px 0 0;height:22%"></div>
+<div style="flex:1;background:var(--warning);border-radius:2px 2px 0 0;height:45%"></div>
+<div style="flex:1;background:var(--warning);border-radius:2px 2px 0 0;height:55%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:70%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:82%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:90%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:95%"></div>
+<div style="flex:1;background:var(--danger);border-radius:2px 2px 0 0;height:100%"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font-size:.5rem;color:var(--muted);margin-bottom:12px">
+<span>Day 1</span><span>Day 5</span><span>Day 10</span><span>Day 14</span>
+</div>
+<div class="mock-alert">
+<span class="alert-icon">🚨 Multi-Jurisdiction Alert</span><br>
+<span style="color:var(--muted)">47 accounts frozen — DE, NL, AT</span><br>
+<span style="color:var(--muted)">Coordinated freeze: 14:32:07</span>
+</div>
+</div>
+<div class="step-status"><span class="dot red"></span> Accounts frozen in 3 countries</div>
+</div>
+
+<!-- STEP 5 -->
+<div class="step-card">
+<div class="step-num">5</div>
+<h4 data-i18n="sc3_s5_title">Coordinated Takedown</h4>
+<p class="step-desc" data-i18n="sc3_s5_desc">Complete evidence package generated for law enforcement across jurisdictions with full timeline and network map.</p>
+<div class="step-mockup">
+<div class="mock-label">Takedown Package</div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(0,212,255,.15);color:var(--accent)">M</span>Mule Accounts</span><span class="mock-val">47</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(16,185,129,.15);color:var(--success)">R</span>Recruiters</span><span class="mock-val">3</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(239,68,68,.15);color:var(--danger)">T</span>Transactions</span><span class="mock-val">1,247</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(245,158,11,.15);color:var(--warning)">₿</span>Crypto Flows</span><span class="mock-val">€892K</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(167,139,250,.15);color:#A78BFA">📍</span>Jurisdictions</span><span class="mock-val">3</span></div>
+<div class="evidence-row"><span style="display:flex;align-items:center"><span class="ev-icon" style="background:rgba(148,163,184,.15);color:var(--muted)">📅</span>Timeline</span><span class="mock-val">14 days</span></div>
+<div style="margin-top:auto;padding-top:8px;border-top:1px solid var(--border)">
+<div class="mock-label">Law Enforcement Package</div>
+<div style="display:flex;align-items:center;gap:6px;font-size:.6rem;color:var(--muted);margin-bottom:6px">
+📦 <span style="font-family:var(--mono)">LE_PKG_MULE_2024.zip</span>
+</div>
+<span class="mock-btn">Export Package</span>
+</div>
+</div>
+<div class="step-status"><span class="dot purple"></span> Takedown coordinated</div>
+</div>
+
+</div>
+
+<!-- Summary bar -->
+<div class="scenario-summary">
+<div class="sum-text">
+<h4 data-i18n="sc3_sum_title">Mule networks thrive on volume and speed. Layer.ONE is faster.</h4>
+<p data-i18n="sc3_sum_desc">From a single device fingerprint to a complete network map — Layer.ONE identifies, links, and freezes mule operations before the money disappears.</p>
+</div>
+<div class="sum-features">
+<div class="sum-feature">
+<div class="sf-icon">📱</div>
+<div class="sf-title" data-i18n="sc3_f1_title">Device Intelligence</div>
+<div class="sf-desc" data-i18n="sc3_f1_desc">Fingerprint matching across accounts and sessions</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">⏱️</div>
+<div class="sf-title" data-i18n="sc3_f2_title">Behavioral Timing</div>
+<div class="sf-desc" data-i18n="sc3_f2_desc">Detects coordinated deposit-withdraw cycles</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">🌍</div>
+<div class="sf-title" data-i18n="sc3_f3_title">Cross-Border Ops</div>
+<div class="sf-desc" data-i18n="sc3_f3_desc">Multi-jurisdiction freeze and coordination</div>
+</div>
+<div class="sum-feature">
+<div class="sf-icon">👮</div>
+<div class="sf-title" data-i18n="sc3_f4_title">LE Packages</div>
+<div class="sf-desc" data-i18n="sc3_f4_desc">Court-ready evidence bundles with full audit trail</div>
+</div>
+</div>
+</div>
+
+</div><!-- /scenario-panel 3 -->
+
+</div><!-- /scenario-panels -->
+
+</section>
+
+<section id="capabilities">
+<div class="container">
+<div class="section-label reveal" data-i18n="cap_label">Core Capabilities</div>
+<div class="section-title reveal" data-i18n="cap_title">Every Question, Answered.</div>
+<div class="section-sub reveal" data-i18n="cap_sub">Everything a CTO, CISO, or compliance officer needs to hear — before they even ask.</div>
+<div class="cap-grid"><div class="cap-card reveal">
+<span class="cap-icon">🛡️</span>
+<h3 data-i18n="cap1_title">On-Premise & Air-Gapped</h3>
+<p data-i18n="cap1_desc">Deploy on your own servers with zero external connectivity. Full air-gapped mode with offline sanctions updates. Your data never leaves your network.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">⚡</span>
+<h3 data-i18n="cap2_title">Real-Time Monitoring</h3>
+<p data-i18n="cap2_desc">Sub-50ms transaction screening API. Score every transfer, payment, and card transaction before it clears. Batch + streaming dual-mode.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">📄</span>
+<h3 data-i18n="cap3_title">SAR/STR Auto-Generation</h3>
+<p data-i18n="cap3_desc">AI generates Suspicious Activity Reports with full narrative, evidence chain, and regulatory formatting. Maker-checker approval, then auto-submit.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">🧾</span>
+<h3 data-i18n="cap4_title">Invoice & Trade Fraud</h3>
+<p data-i18n="cap4_desc">Detect naylon fatura, phantom shipments, over/under invoicing, and trade-based laundering across e-invoice and e-waybill data.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">🕸️</span>
+<h3 data-i18n="cap5_title">Graph Intelligence</h3>
+<p data-i18n="cap5_desc">Visualize money flows, detect hidden networks, and trace fund paths through multi-hop graph analysis. Community detection, cycle finding, centrality ranking.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">🔗</span>
+<h3 data-i18n="cap6_title">Entity Resolution</h3>
+<p data-i18n="cap6_desc">Unify persons, companies, accounts, devices, IPs, and phone numbers across sources. Fuzzy matching, identity graphs, and golden records.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">🔐</span>
+<h3 data-i18n="cap7_title">Encryption & Zero Trust</h3>
+<p data-i18n="cap7_desc">AES-256 at rest, TLS 1.3 in transit, field-level encryption, BYOK support. Zero Trust architecture with full egress monitoring.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">🤖</span>
+<h3 data-i18n="cap8_title">AI-First, Human-Optional</h3>
+<p data-i18n="cap8_desc">The system decides. Analysts review only when your policy requires it. Configurable from full-auto to multi-level human approval chains.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">🌍</span>
+<h3 data-i18n="cap9_title">PEP & Sanctions Screening</h3>
+<p data-i18n="cap9_desc">Real-time screening against OFAC, EU, UN, and local watchlists. Fuzzy name matching, alias resolution, and automatic re-screening on list updates.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">⚙️</span>
+<h3 data-i18n="cap10_title">Configurable Workflows</h3>
+<p data-i18n="cap10_desc">N-level approval chains, conditional branching, parallel sign-off, delegation, and auto-escalation. No-code workflow builder. Your process, your rules.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+<div class="cap-card reveal">
+<span class="cap-icon">🔤</span>
+<h3 data-i18n="cap11_title">Narrative Intelligence</h3>
+<p data-i18n="cap11_desc">Dual-mode transaction description analysis. Real-time: detect illegal content, coded language, and threats in under 50ms. Batch: deep cross-referencing with KYC profiles, sector codes, and historical patterns.</p>
+<div class="cap-check">✓ INCLUDED</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── DETECTION PATTERNS (NEW) ── -->
+<section id="detection">
+<div class="container">
+<div class="section-label reveal" data-i18n="det_label">Detection Engine</div>
+<div class="section-title reveal" data-i18n="det_title">What We Detect.</div>
+<div class="section-sub reveal" data-i18n="det_sub">23+ detection patterns across financial crime and card fraud — each powered by rule engines, ML models, and graph analytics.</div>
+
+<div class="detect-category reveal">
+<h3><span class="cat-icon">🔍</span> <span data-i18n="det_cat1">Financial Crime Patterns</span> <span class="cat-count">16</span></h3>
+<div class="detect-grid">
+<div class="detect-card"><div class="d-icon">💰</div><div class="d-info"><h4 data-i18n="dp1_t">Structuring / Smurfing</h4><p data-i18n="dp1_d">Splitting transactions below reporting thresholds (e.g. $9,900 each)</p></div></div>
+<div class="detect-card"><div class="d-icon">📊</div><div class="d-info"><h4 data-i18n="dp2_t">Layering</h4><p data-i18n="dp2_d">Multi-layered transfer chains to obscure fund origins</p></div></div>
+<div class="detect-card"><div class="d-icon">🔄</div><div class="d-info"><h4 data-i18n="dp3_t">Round-Tripping</h4><p data-i18n="dp3_d">Funds returning to origin through different paths</p></div></div>
+<div class="detect-card"><div class="d-icon">📤</div><div class="d-info"><h4 data-i18n="dp4_t">Fan-Out (1→N)</h4><p data-i18n="dp4_d">One account distributing to many recipients</p></div></div>
+<div class="detect-card"><div class="d-icon">📥</div><div class="d-info"><h4 data-i18n="dp5_t">Fan-In (N→1)</h4><p data-i18n="dp5_d">Many accounts collecting into a single destination</p></div></div>
+<div class="detect-card"><div class="d-icon">🔀</div><div class="d-info"><h4 data-i18n="dp6_t">Fan-In/Out Combo</h4><p data-i18n="dp6_d">Collection + distribution combination (mixer pattern)</p></div></div>
+<div class="detect-card"><div class="d-icon">🫏</div><div class="d-info"><h4 data-i18n="dp7_t">Muling</h4><p data-i18n="dp7_d">Recruited money mule accounts used as intermediaries</p></div></div>
+<div class="detect-card"><div class="d-icon">🧾</div><div class="d-info"><h4 data-i18n="dp8_t">Invoice Fraud (Naylon Fatura)</h4><p data-i18n="dp8_d">Fictitious invoices creating legitimate-looking transfers</p></div></div>
+<div class="detect-card"><div class="d-icon">🚢</div><div class="d-info"><h4 data-i18n="dp9_t">Trade-Based Laundering</h4><p data-i18n="dp9_d">Over/under invoicing, phantom shipments, and fictitious goods</p></div></div>
+<div class="detect-card"><div class="d-icon">🏢</div><div class="d-info"><h4 data-i18n="dp10_t">Shell Company Networks</h4><p data-i18n="dp10_d">Front company networks used to obscure fund flows</p></div></div>
+<div class="detect-card"><div class="d-icon">⏱️</div><div class="d-info"><h4 data-i18n="dp11_t">Funnel Accounts</h4><p data-i18n="dp11_d">Accounts opened, heavily used, and quickly abandoned</p></div></div>
+<div class="detect-card"><div class="d-icon">⚡</div><div class="d-info"><h4 data-i18n="dp12_t">Rapid Movement</h4><p data-i18n="dp12_d">Funds transferred out within minutes of deposit</p></div></div>
+<div class="detect-card"><div class="d-icon">💤</div><div class="d-info"><h4 data-i18n="dp13_t">Dormant Activation</h4><p data-i18n="dp13_d">Long-inactive accounts suddenly becoming active</p></div></div>
+<div class="detect-card"><div class="d-icon">💱</div><div class="d-info"><h4 data-i18n="dp14_t">Currency Cycling</h4><p data-i18n="dp14_d">Circular conversion between different currencies</p></div></div>
+<div class="detect-card"><div class="d-icon">₿</div><div class="d-info"><h4 data-i18n="dp15_t">Crypto Mixing</h4><p data-i18n="dp15_d">Mixer/tumbler services used for crypto laundering</p></div></div>
+<div class="detect-card"><div class="d-icon">🪆</div><div class="d-info"><h4 data-i18n="dp16_t">Nested Services</h4><p data-i18n="dp16_d">Fintech operating through another fintech (Matryoshka pattern)</p></div></div>
+</div>
+</div>
+
+<div class="detect-category reveal">
+<h3><span class="cat-icon">💳</span> <span data-i18n="det_cat2">Card Fraud Patterns</span> <span class="cat-count">7</span></h3>
+<div class="detect-grid">
+<div class="detect-card"><div class="d-icon">🏪</div><div class="d-info"><h4 data-i18n="cf1_t">MCC Analysis</h4><p data-i18n="cf1_d">Merchant Category Code anomalies and high-risk MCC monitoring</p></div></div>
+<div class="detect-card"><div class="d-icon">↩️</div><div class="d-info"><h4 data-i18n="cf2_t">Chargeback Fraud</h4><p data-i18n="cf2_d">Systematic chargeback abuse and friendly fraud patterns</p></div></div>
+<div class="detect-card"><div class="d-icon">🌐</div><div class="d-info"><h4 data-i18n="cf3_t">CNP Fraud</h4><p data-i18n="cf3_d">Card-not-present transaction fraud and velocity anomalies</p></div></div>
+<div class="detect-card"><div class="d-icon">📋</div><div class="d-info"><h4 data-i18n="cf4_t">Card Cloning</h4><p data-i18n="cf4_d">Duplicate card usage detection across locations and devices</p></div></div>
+<div class="detect-card"><div class="d-icon">⚠️</div><div class="d-info"><h4 data-i18n="cf5_t">Merchant Risk</h4><p data-i18n="cf5_d">High-risk merchant scoring and transaction laundering detection</p></div></div>
+<div class="detect-card"><div class="d-icon">🔓</div><div class="d-info"><h4 data-i18n="cf6_t">3D Secure Bypass</h4><p data-i18n="cf6_d">Attempts to circumvent 3DS authentication protocols</p></div></div>
+<div class="detect-card"><div class="d-icon">🔢</div><div class="d-info"><h4 data-i18n="cf7_t">BIN Analysis</h4><p data-i18n="cf7_d">Bank Identification Number pattern analysis and anomaly detection</p></div></div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<section id="solutions">
+<div class="container">
+<div class="section-label reveal" data-i18n="sol_label">Solutions</div>
+<div class="section-title reveal" data-i18n="sol_title">Built for Every Institution.</div>
+<div class="section-sub reveal" data-i18n="sol_sub">One platform. Tailored capabilities per sector — activated by feature flags, controlled by you.</div>
+<div class="sector-tabs reveal"><button class="sector-tab active" data-sector="banks">🏦 Banks</button>
+<button class="sector-tab" data-sector="fiu">🏛️ Financial Intelligence Units</button>
+<button class="sector-tab" data-sector="fintech">💳 Fintechs</button>
+<button class="sector-tab" data-sector="tax">📋 Tax Authorities</button>
+<button class="sector-tab" data-sector="police">👮 Financial Police</button>
+</div>
+<div class="sector-panel active" id="sector-banks">
+<h3 style="font-size:1.2rem;margin-bottom:8px">🏦 Banks & Financial Institutions</h3>
+<p style="color:var(--muted);font-size:.9rem;margin-bottom:24px">Purpose-built feature set for banks & financial institutions.</p>
+<div class="sector-features"><div class="sf-item"><div class="sf-dot"></div><div><h4>Transaction Monitoring</h4><p>Real-time and batch screening of wire transfers, card payments, ATM, and POS transactions.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>SAR/STR Filing</h4><p>Auto-generated suspicious activity reports with maker-checker approval and direct regulatory submission.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Customer Risk Scoring</h4><p>Continuous KYC risk assessment across behavioral, transactional, and network dimensions.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Case Management</h4><p>Full investigation lifecycle — alert triage, evidence collection, graph exploration, disposition tracking.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Graph Visualization</h4><p>Interactive money flow maps with timeline playback, Sankey diagrams, and collaborative analysis.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Credit Card Fraud</h4><p>MCC analysis, chargeback patterns, CNP fraud, card cloning detection, merchant risk scoring.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Decision Engine</h4><p>Auto-approve, auto-block, or route to review based on risk score. Dynamic transaction limits.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Regulatory Compliance</h4><p>FinCEN, MASAK, NCA, AMLD6 — country-specific formatting and filing protocols.</p></div></div>
+</div>
+</div>
+<div class="sector-panel" id="sector-fiu">
+<h3 style="font-size:1.2rem;margin-bottom:8px">🏛️ Financial Intelligence Units</h3>
+<p style="color:var(--muted);font-size:.9rem;margin-bottom:24px">Purpose-built feature set for financial intelligence units.</p>
+<div class="sector-features"><div class="sf-item"><div class="sf-dot"></div><div><h4>Cross-Institutional Analysis</h4><p>Analyze fund flows across multiple banks and financial institutions simultaneously.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Network Intelligence</h4><p>Detect criminal organizations through graph analysis of cross-border transaction patterns.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Regulatory Reporting</h4><p>goAML integration, FATF typology mapping, and country-specific STR/CTR generation.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Investigation Toolkit</h4><p>Entity 360° view, pivot analysis, what-if scenarios, and historical playback.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>War Room Mode</h4><p>Multi-analyst collaborative investigation with shared graph workspace and real-time annotation.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Forensic Replay</h4><p>Re-run any historical transaction against the rules and models active at that time.</p></div></div>
+</div>
+</div>
+<div class="sector-panel" id="sector-fintech">
+<h3 style="font-size:1.2rem;margin-bottom:8px">💳 Fintechs & Neobanks</h3>
+<p style="color:var(--muted);font-size:.9rem;margin-bottom:24px">Purpose-built feature set for fintechs & neobanks.</p>
+<div class="sector-features"><div class="sf-item"><div class="sf-dot"></div><div><h4>Real-Time Scoring API</h4><p>RESTful API with &lt;50ms latency. Score transactions, onboard customers, and flag anomalies instantly.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>KYC Automation</h4><p>Automated identity verification, PEP/sanctions screening, and risk-based onboarding flows.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Device & IP Intelligence</h4><p>Fingerprint devices, detect VPN/proxy/Tor, flag impossible travel, and track session risk.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Fraud Prevention</h4><p>Behavioral anomaly detection, velocity checks, and peer-group comparison for account takeover and payment fraud.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Webhook Integration</h4><p>Push-based event notifications for real-time downstream actions and partner integrations.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>SDK & Developer Tools</h4><p>Python, Java, and Node.js SDKs. OpenAPI spec. Sandbox environment for testing.</p></div></div>
+</div>
+</div>
+<div class="sector-panel" id="sector-tax">
+<h3 style="font-size:1.2rem;margin-bottom:8px">📋 Tax Authorities</h3>
+<p style="color:var(--muted);font-size:.9rem;margin-bottom:24px">Purpose-built feature set for tax authorities.</p>
+<div class="sector-features"><div class="sf-item"><div class="sf-dot"></div><div><h4>Invoice Fraud Detection</h4><p>Identify naylon fatura, circular invoicing, and phantom trade through e-invoice and e-waybill analysis.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>E-Invoice Analysis</h4><p>Native support for country-specific electronic invoice formats (GİB, Peppol, EN 16931).</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Trade-Based Laundering</h4><p>Detect over/under invoicing, mismatched shipments, and fictitious goods across trade corridors.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Shell Company Detection</h4><p>Graph-based identification of shell company networks through shared addresses, directors, and patterns.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>VAT Carousel Detection</h4><p>Identify missing trader fraud and carousel schemes across multi-country VAT chains.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Bulk Data Processing</h4><p>Batch analysis of millions of invoices with pattern matching and anomaly scoring.</p></div></div>
+</div>
+</div>
+<div class="sector-panel" id="sector-police">
+<h3 style="font-size:1.2rem;margin-bottom:8px">👮 Financial Police & Law Enforcement</h3>
+<p style="color:var(--muted);font-size:.9rem;margin-bottom:24px">Purpose-built feature set for financial police & law enforcement.</p>
+<div class="sector-features"><div class="sf-item"><div class="sf-dot"></div><div><h4>Evidence Chain</h4><p>Tamper-proof audit trail with chain of custody for every decision, action, and data access.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Forensic Replay</h4><p>Re-execute historical transactions against point-in-time rules and models for court-ready analysis.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Legal Hold</h4><p>Lock investigation data against deletion or modification during active legal proceedings.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Cross-Case Search</h4><p>Search past investigations for matching entities, patterns, and modus operandi.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>War Room Collaboration</h4><p>Real-time multi-analyst investigation workspace with shared graph and annotation tools.</p></div></div>
+<div class="sf-item"><div class="sf-dot"></div><div><h4>Court-Ready Reports</h4><p>Auto-generated investigation summaries with evidence references and chronological narratives.</p></div></div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── WHY LAYER.ONE (NEW) ── -->
+<section id="why-us">
+<div class="container">
+<div class="section-label reveal" data-i18n="why_label">Competitive Edge</div>
+<div class="section-title reveal" data-i18n="why_title">Why Layer.ONE?</div>
+<div class="section-sub reveal" data-i18n="why_sub">How we compare against legacy and enterprise solutions across key capabilities.</div>
+<div class="compare-table-wrapper reveal">
+<table class="compare-table">
+<thead>
+<tr>
+<th data-i18n="why_feature">Feature</th>
+<th class="hl">Layer.ONE</th>
+<th>Palantir AML</th>
+<th>NICE Actimize</th>
+<th>Oracle FCCM</th>
+<th>SAS AML</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td data-i18n="why_r1">AI-First Architecture</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="partial">◐</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r2">Real-Time + Batch Processing</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="partial">◐</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r3">Air-Gapped Deployment</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="check">✔</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="partial">◐</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r4">Graph Neural Networks</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r5">No-Code Workflow Builder</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="cross">✘</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r6">NLG Report Narratives</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r7">Invoice / Trade Fraud</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r8">Crypto & DeFi Monitoring</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r9">Credit Card Fraud Detection</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="partial">◐</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r10">Unified Platform (Single Vendor)</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r11">Forensic Replay</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+</tr>
+<tr>
+<td data-i18n="why_r12">Cost-Effective Licensing</td>
+<td class="hl"><span class="check">✔</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="cross">✘</span></td>
+<td><span class="partial">◐</span></td>
+<td><span class="partial">◐</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div style="margin-top:16px;text-align:right;font-size:.75rem;color:var(--muted)">
+<span class="check" style="font-size:.85rem">✔</span> Full support &nbsp;
+<span class="partial" style="font-size:.85rem">◐</span> Partial / Add-on &nbsp;
+<span class="cross" style="font-size:.85rem">✘</span> Not available
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<section id="how-it-works">
+<div class="container">
+<div class="section-label reveal" data-i18n="hw_label">How It Works</div>
+<div class="section-title reveal" data-i18n="hw_title">Intelligence at Every Layer.</div>
+<div class="section-sub reveal" data-i18n="hw_sub">From raw data to regulatory filing — a fully autonomous pipeline.</div>
+<div class="pipeline reveal"><div class="pipe-step" data-step="0">
+<div class="pipe-icon">📥</div>
+<h4>Data Ingestion</h4>
+<p>Batch, streaming, CDC, file upload. Any source, any format.</p>
+<span class="pipe-arrow">→</span>
+</div>
+<div class="pipe-step" data-step="1">
+<div class="pipe-icon">🧠</div>
+<h4>AI / ML Engine</h4>
+<p>Supervised, unsupervised, and graph neural networks. Continuously learning.</p>
+<span class="pipe-arrow">→</span>
+</div>
+<div class="pipe-step" data-step="2">
+<div class="pipe-icon">🔍</div>
+<h4>Pattern Detection</h4>
+<p>23+ known patterns plus anomaly detection. Rule engine + ML hybrid.</p>
+<span class="pipe-arrow">→</span>
+</div>
+<div class="pipe-step" data-step="3">
+<div class="pipe-icon">📊</div>
+<h4>Risk Scoring</h4>
+<p>Multi-layer scoring in &lt;50ms. Transaction, entity, account, network levels.</p>
+<span class="pipe-arrow">→</span>
+</div>
+<div class="pipe-step" data-step="4">
+<div class="pipe-icon">⚖️</div>
+<h4>Decision & Action</h4>
+<p>Auto-approve, block, or escalate. Configurable approval workflows.</p>
+<span class="pipe-arrow">→</span>
+</div>
+<div class="pipe-step" data-step="5">
+<div class="pipe-icon">📋</div>
+<h4>Reporting</h4>
+<p>SAR/STR generation, executive dashboards, NLG explanations, audit trails.</p>
+<span class="pipe-arrow">→</span>
+</div>
+</div>
+<div class="tech-highlights reveal">
+<div class="th-card"><h4>Graph Database</h4><p>Neo4j / TigerGraph for billion-edge relationship analysis.</p></div>
+<div class="th-card"><h4>Real-Time Streaming</h4><p>Kafka + Flink for sub-second event processing.</p></div>
+<div class="th-card"><h4>NLG Explanations</h4><p>LLM-powered natural language narratives for every alert and report.</p></div>
+<div class="th-card"><h4>Forensic Replay</h4><p>Re-run any decision against point-in-time rules and models.</p></div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── ARCHITECTURE DIAGRAM (NEW) ── -->
+<section id="architecture">
+<div class="container">
+<div class="section-label reveal" data-i18n="arch_label">System Architecture</div>
+<div class="section-title reveal" data-i18n="arch_title">Built for Scale & Security.</div>
+<div class="section-sub reveal" data-i18n="arch_sub">End-to-end platform architecture — from data ingestion to compliance reporting.</div>
+
+<div class="reveal">
+<div class="arch-section-label">Data Pipeline</div>
+<div class="arch-layer">
+<div class="arch-node">
+<span class="a-icon">📥</span>
+<h4>Data Ingestion</h4>
+<p>Kafka, CDC, REST API, SFTP, File Upload</p>
+</div>
+<span class="arch-arrow">→</span>
+<div class="arch-node">
+<span class="a-icon">🔗</span>
+<h4>Entity Resolution</h4>
+<p>Fuzzy matching, identity graphs, golden records</p>
+</div>
+<span class="arch-arrow">→</span>
+<div class="arch-node">
+<span class="a-icon">🔍</span>
+<h4>Pattern Detection</h4>
+<p>Rule engine + ML + graph analytics</p>
+</div>
+<span class="arch-arrow">→</span>
+<div class="arch-node">
+<span class="a-icon">📊</span>
+<h4>Risk Scoring</h4>
+<p>Multi-layer scoring, &lt;50ms real-time</p>
+</div>
+<span class="arch-arrow">→</span>
+<div class="arch-node">
+<span class="a-icon">⚖️</span>
+<h4>Alert & Case Mgmt</h4>
+<p>Workflow engine, maker-checker, escalation</p>
+</div>
+<span class="arch-arrow">→</span>
+<div class="arch-node">
+<span class="a-icon">📋</span>
+<h4>Reporting</h4>
+<p>SAR/STR, dashboards, NLG narratives</p>
+</div>
+</div>
+
+<div class="arch-section-label">Infrastructure Layer</div>
+<div class="arch-bottom">
+<div class="arch-infra">
+<span class="a-icon">🗄️</span>
+<h4>Storage</h4>
+<p>PostgreSQL, Neo4j, Elasticsearch, Object Storage</p>
+</div>
+<div class="arch-infra">
+<span class="a-icon">🧠</span>
+<h4>ML Platform</h4>
+<p>MLflow, Feature Store, Model Registry, AutoML</p>
+</div>
+<div class="arch-infra">
+<span class="a-icon">🔐</span>
+<h4>Security</h4>
+<p>Zero Trust, TDE, BYOK, DLP, Egress Control</p>
+</div>
+<div class="arch-infra">
+<span class="a-icon">☁️</span>
+<h4>Deployment</h4>
+<p>Kubernetes — Cloud, On-Prem, Hybrid, Air-Gapped</p>
+</div>
+<div class="arch-infra">
+<span class="a-icon">📡</span>
+<h4>Streaming</h4>
+<p>Kafka, Flink, CDC Connectors, Event Bus</p>
+</div>
+<div class="arch-infra">
+<span class="a-icon">📈</span>
+<h4>Observability</h4>
+<p>Prometheus, Grafana, Distributed Tracing, Audit Logs</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<section id="numbers">
+<div class="container">
+<div class="section-label reveal" data-i18n="num_label">Performance</div>
+<div class="section-title reveal" data-i18n="num_title">Numbers That Scale.</div>
+<div class="section-sub reveal" data-i18n="num_sub">Enterprise-grade performance, proven at scale.</div>
+<div class="numbers-grid"><div class="num-card reveal">
+<div class="num-value"><span class="counter" data-target="<50" data-suffix="ms">&lt;50ms</span></div>
+<div class="num-label" data-i18n="n1">Real-Time API Latency</div>
+</div>
+<div class="num-card reveal">
+<div class="num-value"><span class="counter" data-target="100M" data-suffix="+">100M+</span></div>
+<div class="num-label" data-i18n="n2">Transactions / Day</div>
+</div>
+<div class="num-card reveal">
+<div class="num-value"><span class="counter" data-target="23" data-suffix="+">23+</span></div>
+<div class="num-label" data-i18n="n3">Detection Patterns</div>
+</div>
+<div class="num-card reveal">
+<div class="num-value"><span class="counter" data-target="99.95" data-suffix="%">99.95%</span></div>
+<div class="num-label" data-i18n="n4">Uptime SLA</div>
+</div>
+<div class="num-card reveal">
+<div class="num-value"><span class="counter" data-target="10K" data-suffix="+">10K+</span></div>
+<div class="num-label" data-i18n="n5">Concurrent TPS</div>
+</div>
+<div class="num-card reveal">
+<div class="num-value"><span class="counter" data-target="<30" data-suffix="s">&lt;30s</span></div>
+<div class="num-label" data-i18n="n6">Alert Generation</div>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<section id="certifications">
+<div class="container">
+<div class="section-label reveal" data-i18n="cert_label">Compliance</div>
+<div class="section-title reveal" data-i18n="cert_title">Trusted & Certified.</div>
+<div class="section-sub reveal" data-i18n="cert_sub">Enterprise-grade security. Global compliance. Audit-ready from day one.</div>
+<div class="certs-grid"><div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>SOC 2 Type II</h4>
+<p>Security & Availability</p>
+</div>
+<div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>ISO 27001</h4>
+<p>Information Security</p>
+</div>
+<div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>PCI DSS</h4>
+<p>Payment Card Industry</p>
+</div>
+<div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>GDPR</h4>
+<p>EU Data Protection</p>
+</div>
+<div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>KVKK</h4>
+<p>TR Data Protection</p>
+</div>
+<div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>CSA STAR</h4>
+<p>Cloud Security</p>
+</div>
+<div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>FATF Compliant</h4>
+<p>AML Standards</p>
+</div>
+<div class="cert-badge reveal">
+<div class="cert-shield"><svg viewBox="0 0 52 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M26 2L4 14v18c0 14.4 9.4 22.8 22 26 12.6-3.2 22-11.6 22-26V14L26 2z" stroke="var(--accent)" stroke-width="1.5" fill="rgba(0,212,255,.06)"/>
+<path d="M20 30l6 6 10-12" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg></div>
+<h4>ISO 20022</h4>
+<p>Financial Messaging</p>
+</div>
+</div>
+</div>
+</section>
+<div class="section-divider"></div>
+
+<!-- ── CONTACT / DEMO FORM (NEW) ── -->
+<section class="contact-section" id="contact">
+<div class="container">
+<div class="contact-grid">
+<div class="contact-info">
+<div class="section-label" data-i18n="ct_label">Get Started</div>
+<h2 data-i18n="ct_title">Ready to Stop Financial Crime?</h2>
+<p data-i18n="ct_desc">See Layer.ONE in action. Schedule a private demo with our team and discover how AI-first intelligence transforms your compliance operations.</p>
+<div class="ci-item"><span class="ci-icon">📧</span> contact@layerone.com</div>
+<div class="ci-item"><span class="ci-icon">🔒</span> <span data-i18n="ct_secure">Your data is secure. We never share your information.</span></div>
+</div>
+<form class="contact-form" id="contactForm" onsubmit="return handleFormSubmit(event)">
+<input type="text" name="name" placeholder="Your Name" required data-i18n-ph="f_name">
+<input type="email" name="email" placeholder="Work Email" required data-i18n-ph="f_email">
+<input type="text" name="company" placeholder="Company" required data-i18n-ph="f_company">
+<textarea name="message" placeholder="Tell us about your needs..." rows="4" data-i18n-ph="f_message"></textarea>
+<button type="submit" class="btn btn-primary" data-i18n="f_submit">Request a Demo</button>
+<div class="form-note" data-i18n="f_note">We typically respond within 24 hours.</div>
+</form>
+</div>
+</div>
+</section>
+
+
+<div class="footer-bottom">
+<div class="container" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+<span>&copy; 2025 Layer.ONE. All rights reserved.</span>
+<span style="font-family:var(--mono);font-size:.7rem;color:var(--border)">Financial Crime Intelligence Platform</span>
+</div>
+</div>
+
+<script>
+(function(){
+
+/* ── i18n TRANSLATIONS ── */
+var i18n = {
+en: {
+nav_capabilities:"Capabilities",nav_detection:"Detection",nav_solutions:"Solutions",
+scenarios_title:"See Layer.ONE in Action",
+scenarios_subtitle:"Real-world scenarios showing how Layer.ONE transforms raw data into actionable intelligence — from first alert to case resolution.",
+nav_why:"Why Layer.ONE",nav_architecture:"Architecture",nav_scenarios:"Scenarios",nav_demo:"Request Demo",
+hero_brand:"Financial Crime Intelligence Platform",
+hero_title:'Financial Crime<br><em>Stops Here.</em>',
+hero_sub:"AI-powered intelligence platform that detects money laundering, fraud networks, and financial crime in real time. Deployed on your infrastructure. Under your control.",
+hero_cta:"Request a Demo",
+cap_label:"Core Capabilities",cap_title:"Every Question, Answered.",
+cap_sub:"Everything a CTO, CISO, or compliance officer needs to hear — before they even ask.",
+cap1_title:"On-Premise & Air-Gapped",cap1_desc:"Deploy on your own servers with zero external connectivity. Full air-gapped mode with offline sanctions updates. Your data never leaves your network.",
+cap2_title:"Real-Time Monitoring",cap2_desc:"Sub-50ms transaction screening API. Score every transfer, payment, and card transaction before it clears. Batch + streaming dual-mode.",
+cap3_title:"SAR/STR Auto-Generation",cap3_desc:"AI generates Suspicious Activity Reports with full narrative, evidence chain, and regulatory formatting. Maker-checker approval, then auto-submit.",
+cap4_title:"Invoice & Trade Fraud",cap4_desc:"Detect naylon fatura, phantom shipments, over/under invoicing, and trade-based laundering across e-invoice and e-waybill data.",
+cap5_title:"Graph Intelligence",cap5_desc:"Visualize money flows, detect hidden networks, and trace fund paths through multi-hop graph analysis. Community detection, cycle finding, centrality ranking.",
+cap6_title:"Entity Resolution",cap6_desc:"Unify persons, companies, accounts, devices, IPs, and phone numbers across sources. Fuzzy matching, identity graphs, and golden records.",
+cap7_title:"Encryption & Zero Trust",cap7_desc:"AES-256 at rest, TLS 1.3 in transit, field-level encryption, BYOK support. Zero Trust architecture with full egress monitoring.",
+cap8_title:"AI-First, Human-Optional",cap8_desc:"The system decides. Analysts review only when your policy requires it. Configurable from full-auto to multi-level human approval chains.",
+cap9_title:"PEP & Sanctions Screening",cap9_desc:"Real-time screening against OFAC, EU, UN, and local watchlists. Fuzzy name matching, alias resolution, and automatic re-screening on list updates.",
+cap10_title:"Configurable Workflows",cap10_desc:"N-level approval chains, conditional branching, parallel sign-off, delegation, and auto-escalation. No-code workflow builder. Your process, your rules.",
+cap11_title:"Narrative Intelligence",cap11_desc:"Dual-mode transaction description analysis. Real-time: detect illegal content, coded language, and threats in under 50ms. Batch: deep cross-referencing with KYC profiles, sector codes, and historical patterns.",
+det_label:"Detection Engine",det_title:"What We Detect.",
+det_sub:"23+ detection patterns across financial crime and card fraud — each powered by rule engines, ML models, and graph analytics.",
+det_cat1:"Financial Crime Patterns",det_cat2:"Card Fraud Patterns",
+dp1_t:"Structuring / Smurfing",dp1_d:"Splitting transactions below reporting thresholds (e.g. $9,900 each)",
+dp2_t:"Layering",dp2_d:"Multi-layered transfer chains to obscure fund origins",
+dp3_t:"Round-Tripping",dp3_d:"Funds returning to origin through different paths",
+dp4_t:"Fan-Out (1→N)",dp4_d:"One account distributing to many recipients",
+dp5_t:"Fan-In (N→1)",dp5_d:"Many accounts collecting into a single destination",
+dp6_t:"Fan-In/Out Combo",dp6_d:"Collection + distribution combination (mixer pattern)",
+dp7_t:"Muling",dp7_d:"Recruited money mule accounts used as intermediaries",
+dp8_t:"Invoice Fraud (Naylon Fatura)",dp8_d:"Fictitious invoices creating legitimate-looking transfers",
+dp9_t:"Trade-Based Laundering",dp9_d:"Over/under invoicing, phantom shipments, and fictitious goods",
+dp10_t:"Shell Company Networks",dp10_d:"Front company networks used to obscure fund flows",
+dp11_t:"Funnel Accounts",dp11_d:"Accounts opened, heavily used, and quickly abandoned",
+dp12_t:"Rapid Movement",dp12_d:"Funds transferred out within minutes of deposit",
+dp13_t:"Dormant Activation",dp13_d:"Long-inactive accounts suddenly becoming active",
+dp14_t:"Currency Cycling",dp14_d:"Circular conversion between different currencies",
+dp15_t:"Crypto Mixing",dp15_d:"Mixer/tumbler services used for crypto laundering",
+dp16_t:"Nested Services",dp16_d:"Fintech operating through another fintech (Matryoshka pattern)",
+cf1_t:"MCC Analysis",cf1_d:"Merchant Category Code anomalies and high-risk MCC monitoring",
+cf2_t:"Chargeback Fraud",cf2_d:"Systematic chargeback abuse and friendly fraud patterns",
+cf3_t:"CNP Fraud",cf3_d:"Card-not-present transaction fraud and velocity anomalies",
+cf4_t:"Card Cloning",cf4_d:"Duplicate card usage detection across locations and devices",
+cf5_t:"Merchant Risk",cf5_d:"High-risk merchant scoring and transaction laundering detection",
+cf6_t:"3D Secure Bypass",cf6_d:"Attempts to circumvent 3DS authentication protocols",
+cf7_t:"BIN Analysis",cf7_d:"Bank Identification Number pattern analysis and anomaly detection",
+sol_label:"Solutions",sol_title:"Built for Every Institution.",
+sol_sub:"One platform. Tailored capabilities per sector — activated by feature flags, controlled by you.",
+why_label:"Competitive Edge",why_title:"Why Layer.ONE?",
+why_sub:"How we compare against legacy and enterprise solutions across key capabilities.",
+why_feature:"Feature",
+why_r1:"AI-First Architecture",why_r2:"Real-Time + Batch Processing",
+why_r3:"Air-Gapped Deployment",why_r4:"Graph Neural Networks",
+why_r5:"No-Code Workflow Builder",why_r6:"NLG Report Narratives",
+why_r7:"Invoice / Trade Fraud",why_r8:"Crypto & DeFi Monitoring",
+why_r9:"Credit Card Fraud Detection",why_r10:"Unified Platform (Single Vendor)",
+why_r11:"Forensic Replay",why_r12:"Cost-Effective Licensing",
+hw_label:"How It Works",hw_title:"Intelligence at Every Layer.",
+hw_sub:"From raw data to regulatory filing — a fully autonomous pipeline.",
+arch_label:"System Architecture",arch_title:"Built for Scale & Security.",
+arch_sub:"End-to-end platform architecture — from data ingestion to compliance reporting.",
+num_label:"Performance",num_title:"Numbers That Scale.",
+num_sub:"Enterprise-grade performance, proven at scale.",
+n1:"Real-Time API Latency",n2:"Transactions / Day",n3:"Detection Patterns",
+n4:"Uptime SLA",n5:"Concurrent TPS",n6:"Alert Generation",
+cert_label:"Compliance",cert_title:"Trusted & Certified.",
+cert_sub:"Enterprise-grade security. Global compliance. Audit-ready from day one.",
+ct_label:"Get Started",ct_title:"Ready to Stop Financial Crime?",
+ct_desc:"See Layer.ONE in action. Schedule a private demo with our team and discover how AI-first intelligence transforms your compliance operations.",
+ct_secure:"Your data is secure. We never share your information.",
+f_submit:"Request a Demo",f_note:"We typically respond within 24 hours.",
+f_name:"Your Name",f_email:"Work Email",f_company:"Company",f_message:"Tell us about your needs...",
+/* Scenario 1 */
+sc1_tab:"🔍 Hidden Laundering",sc2_tab:"🧾 Invoice Fraud",sc3_tab:"👥 Mule Network",
+sc1_label:"Investigation Scenario 01",sc1_title:"A Hidden Laundering Network",
+sc1_desc:"What begins as a routine wire transfer reveals a coordinated financial crime operation spanning 3 countries and 14 accounts.",
+sc1_s1_title:"Initial Transaction",sc1_s1_desc:"A mid-size wire transfer enters the system. Nothing unusual at first glance.",
+sc1_s2_title:"Hidden Connections Appear",sc1_s2_desc:"Layer.ONE links the sender to multiple accounts, shell companies, and previously flagged entities across jurisdictions.",
+sc1_s3_title:"Pattern Detection",sc1_s3_desc:"The system detects fan-out behavior, rapid movement, and invoice laundering indicators across the network.",
+sc1_s4_title:"Risk Escalation",sc1_s4_desc:"Network risk exceeds institutional thresholds. The transaction is automatically escalated for review.",
+sc1_s5_title:"Investigator Workspace",sc1_s5_desc:"Analysts open a live investigation graph with full evidence chain and AI-generated SAR draft.",
+sc1_sum_title:"From Detection to Action. All in One Platform.",
+sc1_sum_desc:"Layer.ONE connects the dots others miss. We don't just alert — we reveal the full picture, explain the why, and empower investigators to act with confidence.",
+sc1_f1_title:"Real-time Detection",sc1_f1_desc:"Streaming analytics and pattern detection",
+sc1_f2_title:"Graph Intelligence",sc1_f2_desc:"Entity resolution and network analysis",
+sc1_f3_title:"Investigation Suite",sc1_f3_desc:"Forensic tools and collaboration",
+sc1_f4_title:"Regulatory Reporting",sc1_f4_desc:"SAR automation and compliance",
+/* Scenario 2 */
+sc2_label:"Investigation Scenario 02",sc2_title:"An Invoice Fraud Network",
+sc2_desc:"Fake invoices. Shell companies. Circular flows. Layer.ONE connects the dots behind trade-based financial crime.",
+sc2_s1_title:"Suspicious Invoice Detected",sc2_s1_desc:"A corporate client submits an invoice for payment to a supplier. The system flags unusual indicators.",
+sc2_s1_narr:"Description vs sector mismatch <span style=\"opacity:.6\">(batch flagged)</span>",
+sc2_s2_title:"Entity Resolution & Linking",sc2_s2_desc:"Layer.ONE links the supplier to related entities, bank accounts, directors, and previous counterparties.",
+sc2_s3_title:"Fraud Pattern Detection",sc2_s3_desc:"The system detects trade-based money laundering patterns and circular invoice flows.",
+sc2_s4_title:"Risk Escalation",sc2_s4_desc:"The risk score exceeds the institutional threshold. Payment is stopped automatically.",
+sc2_s5_title:"Investigator Workspace",sc2_s5_desc:"Analysts review the full network, supporting documents, and AI-generated SAR draft.",
+sc2_sum_title:"Trade-based money laundering hides behind legitimate business.",
+sc2_sum_desc:"Layer.ONE analyzes entities, documents, payments, and relationships to uncover what traditional systems miss.",
+sc2_f1_title:"Document Intelligence",sc2_f1_desc:"Extracts and analyzes invoice and contract data at scale",
+sc2_f2_title:"Network Analytics",sc2_f2_desc:"Reveals hidden ownership structures and circular relationships",
+sc2_f3_title:"Behavioral AI",sc2_f3_desc:"Detects abnormal trade patterns and pricing anomalies",
+sc2_f4_title:"Regulatory Reporting",sc2_f4_desc:"Generates compliant SARs with full evidence and audit trails",
+/* Scenario 3 */
+sc3_label:"Investigation Scenario 03",sc3_title:"A Mule Network Takedown",
+sc3_desc:"Dozens of seemingly unrelated accounts. One recruiter. Crypto cashout. Layer.ONE maps the entire mule operation in minutes.",
+sc3_s1_title:"Unusual Account Activity",sc3_s1_desc:"Multiple new accounts show identical deposit patterns. Same device fingerprint detected across 12 accounts.",
+sc3_s2_title:"Network Expansion",sc3_s2_desc:"Layer.ONE maps 47 mule accounts to 3 recruiters, 2 crypto exchanges, and a central coordinator.",
+sc3_s3_title:"Behavioral Analysis",sc3_s3_desc:"AI detects coordinated timing: burst deposits, immediate ATM withdrawals, and crypto conversion within hours.",
+sc3_s4_title:"Cross-Border Escalation",sc3_s4_desc:"Risk score peaks. Multi-jurisdiction alert triggers simultaneous account freezes across 3 countries.",
+sc3_s5_title:"Coordinated Takedown",sc3_s5_desc:"Complete evidence package generated for law enforcement across jurisdictions with full timeline and network map.",
+sc3_sum_title:"Mule networks thrive on volume and speed. Layer.ONE is faster.",
+sc3_sum_desc:"From a single device fingerprint to a complete network map — Layer.ONE identifies, links, and freezes mule operations before the money disappears.",
+sc3_f1_title:"Device Intelligence",sc3_f1_desc:"Fingerprint matching across accounts and sessions",
+sc3_f2_title:"Behavioral Timing",sc3_f2_desc:"Detects coordinated deposit-withdraw cycles",
+sc3_f3_title:"Cross-Border Ops",sc3_f3_desc:"Multi-jurisdiction freeze and coordination",
+sc3_f4_title:"LE Packages",sc3_f4_desc:"Court-ready evidence bundles with full audit trail"
+},
+tr: {
+nav_capabilities:"Yetenekler",nav_detection:"Tespit",nav_solutions:"Çözümler",
+nav_scenarios:"Senaryolar",
+scenarios_title:"Layer.ONE İş Başında",
+scenarios_subtitle:"Gerçek dünya senaryolarıyla Layer.ONE'ın ham veriyi eyleme dönüştürülebilir istihbarata nasıl dönüştürdüğünü görün — ilk uyarıdan dava çözümüne.",
+nav_why:"Neden Layer.ONE",nav_architecture:"Mimari",nav_scenarios:"Senaryolar",nav_demo:"Demo Talep Et",
+hero_brand:"Finansal Suç İstihbarat Platformu",
+hero_title:'Finansal Suç<br><em>Burada Biter.</em>',
+hero_sub:"Kara para aklama, dolandırıcılık ağları ve finansal suçları gerçek zamanlı tespit eden yapay zekâ destekli istihbarat platformu. Altyapınızda çalışır. Kontrolünüz altında.",
+hero_cta:"Demo Talep Et",
+cap_label:"Temel Yetenekler",cap_title:"Her Soruya Cevap.",
+cap_sub:"CTO, CISO veya uyum yöneticisinin sormadan önce duymak istediği her şey.",
+cap1_title:"Yerinde & Hava Boşluklu",cap1_desc:"Sıfır dış bağlantıyla kendi sunucularınızda çalıştırın. Çevrimdışı yaptırım güncellemeleriyle tam hava boşluklu mod. Veriniz ağınızdan asla çıkmaz.",
+cap2_title:"Gerçek Zamanlı İzleme",cap2_desc:"50ms altı işlem tarama API'si. Her transfer, ödeme ve kart işlemini onaylanmadan önce puanlayın. Toplu + akış çift modu.",
+cap3_title:"SAR/STR Otomatik Üretim",cap3_desc:"Yapay zekâ tam anlatım, kanıt zinciri ve düzenleyici formatlama ile ŞİR oluşturur. Yapıcı-denetçi onayı, ardından otomatik gönderim.",
+cap4_title:"Fatura & Ticaret Dolandırıcılığı",cap4_desc:"E-fatura ve e-irsaliye verilerinde naylon fatura, hayalet sevkiyat, fazla/eksik faturalama ve ticaret tabanlı aklama tespiti.",
+cap5_title:"Graf İstihbaratı",cap5_desc:"Para akışlarını görselleştirin, gizli ağları tespit edin ve çok atlamalı graf analizi ile fon yollarını takip edin.",
+cap6_title:"Varlık Çözümleme",cap6_desc:"Kişileri, şirketleri, hesapları, cihazları, IP'leri ve telefon numaralarını kaynaklar arasında birleştirin. Bulanık eşleştirme ve altın kayıtlar.",
+cap7_title:"Şifreleme & Sıfır Güven",cap7_desc:"Durağan AES-256, transit TLS 1.3, alan düzeyinde şifreleme, BYOK desteği. Tam çıkış izleme ile Sıfır Güven mimarisi.",
+cap8_title:"Yapay Zekâ Öncelikli",cap8_desc:"Sistem karar verir. Analistler sadece politikanız gerektirdiğinde inceler. Tam otomatikten çok seviyeli insan onay zincirlerine yapılandırılabilir.",
+cap9_title:"PEP & Yaptırım Taraması",cap9_desc:"OFAC, AB, BM ve yerel izleme listelerine karşı gerçek zamanlı tarama. Bulanık ad eşleştirme ve liste güncellemelerinde otomatik yeniden tarama.",
+cap10_title:"Yapılandırılabilir İş Akışları",cap10_desc:"N seviyeli onay zincirleri, koşullu dallanma, paralel imza, devretme ve otomatik üst kademeye aktarma. Kodsuz iş akışı oluşturucu.",
+cap11_title:"Anlatı İstihbaratı",cap11_desc:"Çift modlu işlem açıklaması analizi. Gerçek zamanlı: yasadışı içerik, kodlanmış dil ve tehditleri 50ms altında tespit. Toplu: KYC profilleri, sektör kodları ve tarihsel kalıplarla derin çapraz analiz.",
+det_label:"Tespit Motoru",det_title:"Neler Tespit Ediyoruz.",
+det_sub:"Finansal suç ve kart dolandırıcılığı genelinde 23+ tespit kalıbı — her biri kural motoru, ML modelleri ve graf analitiği ile desteklenir.",
+det_cat1:"Finansal Suç Kalıpları",det_cat2:"Kart Dolandırıcılığı Kalıpları",
+dp1_t:"Yapılandırma / Smurfing",dp1_d:"İşlemleri raporlama eşiğinin altında bölme (ör. her biri $9.900)",
+dp2_t:"Katmanlama",dp2_d:"Fon kaynaklarını gizlemek için çok katmanlı transfer zincirleri",
+dp3_t:"Döngüsel Transfer",dp3_d:"Fonların farklı yollardan kaynağa geri dönmesi",
+dp4_t:"Yayılma (1→N)",dp4_d:"Bir hesaptan çok sayıda alıcıya dağıtım",
+dp5_t:"Toplama (N→1)",dp5_d:"Çok hesaptan tek bir hedefe toplama",
+dp6_t:"Toplama/Yayılma Kombo",dp6_d:"Toplama + dağıtım kombinasyonu (karıştırıcı kalıp)",
+dp7_t:"Para Katırcılığı",dp7_d:"Aracı olarak kullanılan devşirilmiş para katırı hesapları",
+dp8_t:"Fatura Dolandırıcılığı (Naylon Fatura)",dp8_d:"Meşru görünümlü transferler oluşturan sahte faturalar",
+dp9_t:"Ticaret Tabanlı Aklama",dp9_d:"Fazla/eksik faturalama, hayalet sevkiyatlar ve hayali mallar",
+dp10_t:"Paravan Şirket Ağları",dp10_d:"Fon akışlarını gizlemek için kullanılan paravan şirket ağları",
+dp11_t:"Huni Hesaplar",dp11_d:"Açılıp yoğun kullanılıp hızla terk edilen hesaplar",
+dp12_t:"Hızlı Hareket",dp12_d:"Yatırımdan dakikalar içinde dışarı aktarılan fonlar",
+dp13_t:"Hareketsiz Hesap Aktivasyonu",dp13_d:"Uzun süredir hareketsiz hesapların aniden aktifleşmesi",
+dp14_t:"Döviz Döngüsü",dp14_d:"Farklı para birimleri arasında döngüsel dönüşüm",
+dp15_t:"Kripto Karıştırma",dp15_d:"Kripto aklama için kullanılan karıştırıcı/tumbler servisleri",
+dp16_t:"İç İçe Servisler",dp16_d:"Başka bir fintech üzerinden çalışan fintech (Matruşka kalıbı)",
+cf1_t:"MCC Analizi",cf1_d:"İşyeri Kategori Kodu anomalileri ve yüksek riskli MCC izleme",
+cf2_t:"Ters İbraz Dolandırıcılığı",cf2_d:"Sistematik ters ibraz istismarı ve dost dolandırıcılık kalıpları",
+cf3_t:"Kartsız İşlem Dolandırıcılığı",cf3_d:"Kart mevcut olmadan işlem dolandırıcılığı ve hız anomalileri",
+cf4_t:"Kart Klonlama",cf4_d:"Konum ve cihazlar arasında çift kart kullanım tespiti",
+cf5_t:"İşyeri Riski",cf5_d:"Yüksek riskli işyeri puanlaması ve işlem aklama tespiti",
+cf6_t:"3D Secure Atlatma",cf6_d:"3DS kimlik doğrulama protokollerini atlatma girişimleri",
+cf7_t:"BIN Analizi",cf7_d:"Banka Kimlik Numarası kalıp analizi ve anomali tespiti",
+sol_label:"Çözümler",sol_title:"Her Kurum İçin İnşa Edildi.",
+sol_sub:"Tek platform. Sektöre özel yetenekler — özellik bayrakları ile etkinleştirilen, sizin kontrolünüzde.",
+why_label:"Rekabet Avantajı",why_title:"Neden Layer.ONE?",
+why_sub:"Temel yetenekler genelinde eski ve kurumsal çözümlerle nasıl karşılaştırıyoruz.",
+why_feature:"Özellik",
+why_r1:"Yapay Zekâ Öncelikli Mimari",why_r2:"Gerçek Zamanlı + Toplu İşleme",
+why_r3:"Hava Boşluklu Dağıtım",why_r4:"Graf Sinir Ağları",
+why_r5:"Kodsuz İş Akışı Oluşturucu",why_r6:"NLG Rapor Anlatımları",
+why_r7:"Fatura / Ticaret Dolandırıcılığı",why_r8:"Kripto & DeFi İzleme",
+why_r9:"Kredi Kartı Dolandırıcılığı Tespiti",why_r10:"Birleşik Platform (Tek Satıcı)",
+why_r11:"Adli Tekrar Oynatma",why_r12:"Uygun Maliyetli Lisanslama",
+hw_label:"Nasıl Çalışır",hw_title:"Her Katmanda İstihbarat.",
+hw_sub:"Ham veriden düzenleyici dosyalamaya — tamamen otonom pipeline.",
+arch_label:"Sistem Mimarisi",arch_title:"Ölçek ve Güvenlik İçin İnşa Edildi.",
+arch_sub:"Uçtan uca platform mimarisi — veri alımından uyumluluk raporlamasına.",
+num_label:"Performans",num_title:"Ölçeklenen Rakamlar.",
+num_sub:"Kurumsal düzey performans, ölçekte kanıtlanmış.",
+n1:"Gerçek Zamanlı API Gecikmesi",n2:"Günlük İşlem",n3:"Tespit Kalıbı",
+n4:"Çalışma Süresi SLA",n5:"Eşzamanlı TPS",n6:"Uyarı Oluşturma",
+cert_label:"Uyumluluk",cert_title:"Güvenilir & Sertifikalı.",
+cert_sub:"Kurumsal düzey güvenlik. Küresel uyumluluk. İlk günden denetim hazır.",
+ct_label:"Başlayın",ct_title:"Finansal Suçu Durdurmaya Hazır mısınız?",
+ct_desc:"Layer.ONE'ı çalışırken görün. Ekibimizle özel bir demo planlayın ve yapay zekâ öncelikli istihbaratın uyumluluk operasyonlarınızı nasıl dönüştürdüğünü keşfedin.",
+ct_secure:"Verileriniz güvende. Bilgilerinizi asla paylaşmayız.",
+f_submit:"Demo Talep Et",f_note:"Genellikle 24 saat içinde yanıt veririz.",
+f_name:"Adınız",f_email:"İş E-postanız",f_company:"Şirket",f_message:"İhtiyaçlarınızı anlatın...",
+/* Senaryo 1 */
+sc1_tab:"🔍 Gizli Aklama",sc2_tab:"🧾 Fatura Dolandırıcılığı",sc3_tab:"👥 Para Katırı Ağı",
+sc1_label:"Soruşturma Senaryosu 01",sc1_title:"Gizli Bir Aklama Ağı",
+sc1_desc:"Rutin bir havale olarak başlayan işlem, 3 ülke ve 14 hesaba yayılan koordineli bir finansal suç operasyonunu ortaya çıkarır.",
+sc1_s1_title:"İlk İşlem",sc1_s1_desc:"Orta büyüklükte bir havale sisteme girer. İlk bakışta olağandışı bir durum yok.",
+sc1_s2_title:"Gizli Bağlantılar Ortaya Çıkıyor",sc1_s2_desc:"Layer.ONE göndericiyi birden fazla hesap, paravan şirket ve daha önce işaretlenmiş varlıklarla ilişkilendirir.",
+sc1_s3_title:"Kalıp Tespiti",sc1_s3_desc:"Sistem ağ genelinde yayılma davranışı, hızlı hareket ve fatura aklama göstergeleri tespit eder.",
+sc1_s4_title:"Risk Yükseltme",sc1_s4_desc:"Ağ riski kurumsal eşikleri aşar. İşlem otomatik olarak incelemeye alınır.",
+sc1_s5_title:"Soruşturmacı Çalışma Alanı",sc1_s5_desc:"Analistler tam kanıt zinciri ve yapay zekâ tarafından oluşturulan ŞİR taslağıyla canlı soruşturma grafiğini açar.",
+sc1_sum_title:"Tespitden Eyleme. Tek Platformda.",
+sc1_sum_desc:"Layer.ONE başkalarının kaçırdığı noktaları birleştirir. Sadece uyarı vermez — büyük resmi ortaya koyar, nedeni açıklar ve soruşturmacıları güvenle hareket etmeye yetkilendirir.",
+sc1_f1_title:"Gerçek Zamanlı Tespit",sc1_f1_desc:"Akış analitiği ve kalıp tespiti",
+sc1_f2_title:"Graf İstihbaratı",sc1_f2_desc:"Varlık çözümleme ve ağ analizi",
+sc1_f3_title:"Soruşturma Paketi",sc1_f3_desc:"Adli araçlar ve işbirliği",
+sc1_f4_title:"Düzenleyici Raporlama",sc1_f4_desc:"ŞİR otomasyonu ve uyumluluk",
+/* Senaryo 2 */
+sc2_label:"Soruşturma Senaryosu 02",sc2_title:"Fatura Dolandırıcılığı Ağı",
+sc2_desc:"Sahte faturalar. Paravan şirketler. Döngüsel akışlar. Layer.ONE ticaret tabanlı finansal suçun arkasındaki noktaları birleştirir.",
+sc2_s1_title:"Şüpheli Fatura Tespit Edildi",sc2_s1_desc:"Kurumsal bir müşteri tedarikçiye ödeme için fatura gönderir. Sistem olağandışı göstergeleri işaretler.",
+sc2_s1_narr:"Açıklama ile sektör uyumsuzluğu <span style=\"opacity:.6\">(toplu analiz tespiti)</span>",
+sc2_s2_title:"Varlık Çözümleme ve İlişkilendirme",sc2_s2_desc:"Layer.ONE tedarikçiyi ilgili varlıklar, banka hesapları, yöneticiler ve önceki karşı taraflarla ilişkilendirir.",
+sc2_s3_title:"Dolandırıcılık Kalıp Tespiti",sc2_s3_desc:"Sistem ticaret tabanlı kara para aklama kalıplarını ve döngüsel fatura akışlarını tespit eder.",
+sc2_s4_title:"Risk Yükseltme",sc2_s4_desc:"Risk skoru kurumsal eşiği aşar. Ödeme otomatik olarak durdurulur.",
+sc2_s5_title:"Soruşturmacı Çalışma Alanı",sc2_s5_desc:"Analistler tüm ağı, destekleyici belgeleri ve yapay zekâ tarafından oluşturulan ŞİR taslağını inceler.",
+sc2_sum_title:"Ticaret tabanlı kara para aklama meşru işlerin arkasına gizlenir.",
+sc2_sum_desc:"Layer.ONE varlıkları, belgeleri, ödemeleri ve ilişkileri analiz ederek geleneksel sistemlerin kaçırdığını ortaya çıkarır.",
+sc2_f1_title:"Belge İstihbaratı",sc2_f1_desc:"Fatura ve sözleşme verilerini ölçekte çıkarır ve analiz eder",
+sc2_f2_title:"Ağ Analitiği",sc2_f2_desc:"Gizli mülkiyet yapılarını ve döngüsel ilişkileri ortaya koyar",
+sc2_f3_title:"Davranışsal Yapay Zekâ",sc2_f3_desc:"Anormal ticaret kalıplarını ve fiyatlandırma anomalilerini tespit eder",
+sc2_f4_title:"Düzenleyici Raporlama",sc2_f4_desc:"Tam kanıt ve denetim iziyle uyumlu ŞİR'ler oluşturur",
+/* Senaryo 3 */
+sc3_label:"Soruşturma Senaryosu 03",sc3_title:"Para Katırı Ağı Operasyonu",
+sc3_desc:"Düzinelerce görünüşte ilgisiz hesap. Bir devşirici. Kripto çıkışı. Layer.ONE tüm katır operasyonunu dakikalar içinde haritalandırır.",
+sc3_s1_title:"Olağandışı Hesap Aktivitesi",sc3_s1_desc:"Birden fazla yeni hesap aynı yatırma kalıbını gösteriyor. 12 hesapta aynı cihaz parmak izi tespit edildi.",
+sc3_s2_title:"Ağ Genişlemesi",sc3_s2_desc:"Layer.ONE 47 katır hesabını 3 devşirici, 2 kripto borsası ve bir merkezi koordinatörle eşleştirir.",
+sc3_s3_title:"Davranışsal Analiz",sc3_s3_desc:"Yapay zekâ koordineli zamanlama tespit eder: yoğun yatırmalar, anlık ATM çekimleri ve saatler içinde kripto dönüşümü.",
+sc3_s4_title:"Sınır Ötesi Yükseltme",sc3_s4_desc:"Risk skoru zirveye ulaşır. Çok yargı yetkili uyarı 3 ülkede eş zamanlı hesap dondurma tetikler.",
+sc3_s5_title:"Koordineli Operasyon",sc3_s5_desc:"Kolluk kuvvetleri için tam zaman çizelgesi ve ağ haritasıyla eksiksiz kanıt paketi oluşturulur.",
+sc3_sum_title:"Katır ağları hacim ve hız üzerine gelişir. Layer.ONE daha hızlı.",
+sc3_sum_desc:"Tek bir cihaz parmak izinden eksiksiz ağ haritasına — Layer.ONE para kaybolmadan katır operasyonlarını tespit eder, ilişkilendirir ve dondurur.",
+sc3_f1_title:"Cihaz İstihbaratı",sc3_f1_desc:"Hesaplar ve oturumlar arasında parmak izi eşleştirme",
+sc3_f2_title:"Davranışsal Zamanlama",sc3_f2_desc:"Koordineli yatırma-çekme döngülerini tespit eder",
+sc3_f3_title:"Sınır Ötesi Operasyonlar",sc3_f3_desc:"Çok yargı yetkili dondurma ve koordinasyon",
+sc3_f4_title:"Kolluk Kuvveti Paketleri",sc3_f4_desc:"Tam denetim iziyle mahkemeye hazır kanıt paketleri"
+}
+};
+
+var currentLang = 'en';
+
+function setLang(lang) {
+currentLang = lang;
+var t = i18n[lang];
+if (!t) return;
+// Text content
+document.querySelectorAll('[data-i18n]').forEach(function(el) {
+var key = el.getAttribute('data-i18n');
+if (t[key] !== undefined) el.innerHTML = t[key];
+});
+// Placeholders
+document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+var key = el.getAttribute('data-i18n-ph');
+if (t[key] !== undefined) el.placeholder = t[key];
+});
+// Update lang selector button
+var flagMap = {en:'🇬🇧',tr:'🇹🇷'};
+var nameMap = {en:'EN',tr:'TR'};
+document.querySelector('#langBtn .flag').textContent = flagMap[lang] || '🌐';
+document.querySelector('#langBtn .lang-name').textContent = nameMap[lang] || lang.toUpperCase();
+document.querySelectorAll('.lang-option').forEach(function(o) {
+o.classList.toggle('active', o.getAttribute('data-lang') === lang);
+});
+document.documentElement.lang = lang;
+}
+
+/* ── LANG SELECTOR ── */
+var langSel = document.getElementById('langSelector');
+var langBtn = document.getElementById('langBtn');
+langBtn.addEventListener('click', function(e) {
+e.stopPropagation();
+langSel.classList.toggle('open');
+});
+document.querySelectorAll('.lang-option').forEach(function(opt) {
+opt.addEventListener('click', function() {
+setLang(opt.getAttribute('data-lang'));
+langSel.classList.remove('open');
+});
+});
+document.addEventListener('click', function() { langSel.classList.remove('open'); });
+
+/* ── NAV TOGGLE ── */
+var tog=document.getElementById('navToggle');
+var links=document.getElementById('navLinks');
+tog.addEventListener('click',function(){links.classList.toggle('open')});
+links.addEventListener('click',function(e){
+if(e.target.tagName==='A')links.classList.remove('open');
+});
+
+/* ── SECTOR TABS ── */
+var tabs=document.querySelectorAll('.sector-tab');
+var panels=document.querySelectorAll('.sector-panel');
+tabs.forEach(function(tab){
+tab.addEventListener('click',function(){
+tabs.forEach(function(t){t.classList.remove('active')});
+panels.forEach(function(p){p.classList.remove('active')});
+tab.classList.add('active');
+var s=document.getElementById('sector-'+tab.getAttribute('data-sector'));
+if(s)s.classList.add('active');
+});
+});
+
+/* ── PIPELINE ANIMATION ── */
+function animatePipeline(){
+var steps=document.querySelectorAll('.pipe-step');
+var idx=0;
+function lightNext(){
+if(idx<steps.length){steps[idx].classList.add('lit');idx++;setTimeout(lightNext,400)}
+else{setTimeout(function(){steps.forEach(function(s){s.classList.remove('lit')});idx=0;lightNext()},3000)}
+}
+var io=new IntersectionObserver(function(entries){
+entries.forEach(function(e){if(e.isIntersecting){lightNext();io.disconnect()}});
+},{threshold:.3});
+var sec=document.getElementById('how-it-works');
+if(sec)io.observe(sec);
+}
+animatePipeline();
+
+/* ── NUMBER COUNTER ── */
+function animateCounters(){
+var counters=document.querySelectorAll('.counter');
+counters.forEach(function(el){
+var io=new IntersectionObserver(function(entries){
+entries.forEach(function(e){
+if(e.isIntersecting){
+var tgt=el.getAttribute('data-target');
+var sfx=el.getAttribute('data-suffix')||'';
+var hasLT=tgt.charAt(0)==='<';
+var prefix=hasLT?'<':'';
+var clean=tgt.replace('<','');
+var unit='';
+if(clean.match(/[MmKk]$/)){unit=clean.slice(-1).toUpperCase();clean=clean.slice(0,-1)}
+var num=parseFloat(clean);
+var isInt=Number.isInteger(num);
+var dur=1200,start=null;
+function step(ts){
+if(!start)start=ts;
+var p=Math.min((ts-start)/dur,1);
+var ease=1-Math.pow(1-p,3);
+var cur=(num*ease);
+if(isInt)el.textContent=prefix+Math.round(cur)+unit+sfx;
+else el.textContent=prefix+cur.toFixed(2)+unit+sfx;
+if(p<1)requestAnimationFrame(step);
+else el.textContent=prefix+num+unit+sfx;
+}
+requestAnimationFrame(step);
+io.disconnect();
+}});
+},{threshold:.5});
+io.observe(el);
+});
+}
+animateCounters();
+
+/* ── REVEAL ON SCROLL ── */
+var reveals=document.querySelectorAll('.reveal');
+reveals.forEach(function(el){el.classList.add('hidden')});
+var revIO=new IntersectionObserver(function(entries){
+entries.forEach(function(e){if(e.isIntersecting){e.target.classList.remove('hidden');e.target.classList.add('visible');revIO.unobserve(e.target)}});
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+reveals.forEach(function(el){revIO.observe(el)});
+
+/* ── ACTIVE NAV HIGHLIGHT ── */
+var sections=document.querySelectorAll('section[id]');
+var navAs=document.querySelectorAll('.nav-links a[href^="#"]');
+var navIO=new IntersectionObserver(function(entries){
+entries.forEach(function(e){
+if(e.isIntersecting){
+var id=e.target.getAttribute('id');
+navAs.forEach(function(a){a.classList.remove('active');
+if(a.getAttribute('href')==='#'+id)a.classList.add('active');
+});
+}});
+},{threshold:.2,rootMargin:'-64px 0px -50% 0px'});
+sections.forEach(function(s){navIO.observe(s)});
+
+/* ── SCENARIO CAROUSEL ── */
+
+var scTabs=document.querySelectorAll('.scenario-tab');
+var scPanels=document.querySelectorAll('.scenario-panel');
+scTabs.forEach(function(tab){
+tab.addEventListener('click',function(){
+scTabs.forEach(function(t){t.classList.remove('active')});
+scPanels.forEach(function(p){p.classList.remove('active')});
+tab.classList.add('active');
+var idx=tab.getAttribute('data-scenario');
+var panel=document.querySelector('[data-scenario-panel="'+idx+'"]');
+if(panel)panel.classList.add('active');
+});
+});
+
+})();
+
+/* ── CONTACT FORM HANDLER ── */
+function handleFormSubmit(e) {
+e.preventDefault();
+var form = document.getElementById('contactForm');
+var btn = form.querySelector('.btn');
+var origText = btn.textContent;
+btn.textContent = currentLang === 'tr' ? 'Gönderiliyor...' : 'Sending...';
+btn.style.opacity = '.6';
+btn.disabled = true;
+setTimeout(function() {
+btn.textContent = currentLang === 'tr' ? '✓ Gönderildi!' : '✓ Sent!';
+btn.style.opacity = '1';
+btn.style.background = 'var(--success)';
+form.reset();
+setTimeout(function() {
+btn.textContent = origText;
+btn.style.background = '';
+btn.disabled = false;
+}, 3000);
+}, 1500);
+return false;
+}
+</script>
+<script></script>
+</body>
+</html>
