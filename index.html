@@ -411,6 +411,102 @@ color:var(--text);font-family:var(--font);font-size:.9rem;transition:border-colo
 .footer-bottom{text-align:center;padding:24px;border-top:1px solid var(--border);
 color:var(--muted);font-size:.75rem}
 
+/* ── NETWORK TRACE ── */
+/* ── NETWORK TRACE ── */
+.trace-section{padding:100px 24px;position:relative;overflow:hidden}
+.trace-section .container{max-width:1200px;margin:0 auto;text-align:center}
+.trace-demo{margin:48px auto 56px;max-width:800px}
+.trace-search{display:inline-flex;align-items:center;gap:10px;background:var(--surface);
+border:1px solid var(--border);border-radius:var(--radius);padding:14px 24px;font-size:1rem;
+color:var(--text);font-family:var(--mono);min-width:340px;transition:border-color .4s,box-shadow .4s}
+.trace-search.active{border-color:var(--accent);box-shadow:0 0 20px rgba(0,212,255,.15)}
+.trace-search .search-icon{color:var(--accent);font-size:1.1rem}
+.trace-cursor{display:inline-block;width:2px;height:1.1em;background:var(--accent);
+animation:blink-cursor .7s step-end infinite;vertical-align:text-bottom;margin-left:1px}
+@keyframes blink-cursor{50%{opacity:0}}
+
+/* Graph area — larger than scenario graphs */
+.trace-graph{position:relative;width:100%;height:500px;margin:24px auto 0}
+.trace-lines{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.trace-lines line{stroke:rgba(148,163,184,.15);stroke-width:1.5;
+opacity:0;transition:opacity .6s ease,stroke .5s ease,stroke-width .3s}
+.trace-lines line.visible{opacity:1}
+.trace-lines line.flagged-red{stroke:var(--danger);stroke-width:2.5;
+filter:drop-shadow(0 0 4px rgba(239,68,68,.4))}
+.trace-lines line.cross{stroke-dasharray:6,4}
+
+/* Override node sizes for trace section */
+.trace-graph .graph-node.trace-nd{width:32px;height:32px;font-size:.6rem;
+opacity:0;transform:scale(0);transition:opacity .5s ease,transform .5s cubic-bezier(.34,1.56,.64,1);z-index:3}
+.trace-graph .graph-node.trace-nd.visible{opacity:1;transform:scale(1)}
+.trace-graph .graph-node.center.trace-nd{width:44px;height:44px;font-size:.7rem;
+box-shadow:0 0 16px rgba(239,68,68,.5)}
+.trace-graph .graph-node.trace-r2{width:26px;height:26px;font-size:.55rem}
+
+/* Node pulse effect */
+@keyframes trace-pulse{0%,100%{box-shadow:0 0 16px rgba(239,68,68,.4)}50%{box-shadow:0 0 28px rgba(239,68,68,.7)}}
+.trace-graph .graph-node.trace-nd.pulsing{animation:trace-pulse 1.5s ease infinite}
+
+/* Node labels */
+.trace-nlabel{position:absolute;font-size:.6rem;font-family:var(--mono);color:var(--muted);
+white-space:nowrap;transform:translateX(-50%);z-index:4;
+opacity:0;transition:opacity .4s ease;pointer-events:none}
+.trace-nlabel.visible{opacity:1}
+
+/* Amount labels on flagged edges */
+.trace-amount{position:absolute;font-size:.65rem;font-family:var(--mono);font-weight:700;
+color:var(--danger);background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);
+border-radius:4px;padding:2px 8px;z-index:5;opacity:0;transform:translateX(-50%) scale(0.8);
+transition:opacity .4s ease,transform .4s ease;pointer-events:none}
+.trace-amount.visible{opacity:1;transform:translateX(-50%) scale(1)}
+
+/* Detection badges */
+.trace-detect{display:inline-block;background:rgba(239,68,68,.1);
+border:1px solid rgba(239,68,68,.3);border-radius:6px;padding:10px 20px;
+font-size:.8rem;color:var(--danger);font-weight:600;font-family:var(--mono);
+opacity:0;transform:translateY(10px);transition:opacity .5s ease,transform .5s ease;
+margin-top:16px;pointer-events:none}
+.trace-detect.visible{opacity:1;transform:translateY(0)}
+.trace-detect-secondary{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.3);
+color:var(--accent);margin-left:12px}
+.trace-detect-secondary strong{font-size:1.1rem}
+.trace-detect-sar{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.3);
+color:var(--success);margin-left:12px}
+
+/* Capability cards */
+.trace-capabilities{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:left}
+.trace-cap-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+padding:24px;transition:border-color .3s,transform .3s}
+.trace-cap-card:hover{border-color:rgba(0,212,255,.3);transform:translateY(-2px)}
+.trace-cap-card .cap-emoji{font-size:1.6rem;margin-bottom:12px;display:block}
+.trace-cap-card h4{font-size:.95rem;font-weight:700;margin-bottom:8px;color:var(--text)}
+.trace-cap-card p{font-size:.85rem;color:var(--muted);line-height:1.6}
+
+/* Responsive */
+@media(max-width:900px){
+.trace-capabilities{grid-template-columns:repeat(2,1fr)}
+.trace-graph{height:400px}
+.trace-search{min-width:280px;font-size:.9rem;padding:12px 18px}
+.trace-detect{font-size:.7rem;padding:8px 14px;display:block;margin:8px auto 0}
+.trace-detect-secondary,.trace-detect-sar{margin-left:0}
+}
+@media(max-width:600px){
+.trace-capabilities{grid-template-columns:1fr}
+.trace-graph{height:320px}
+.trace-search{min-width:240px;font-size:.85rem;padding:10px 16px}
+.trace-graph .graph-node.trace-nd{width:24px;height:24px;font-size:.5rem}
+.trace-graph .graph-node.center.trace-nd{width:34px;height:34px}
+.trace-graph .graph-node.trace-r2{width:20px;height:20px;font-size:.45rem}
+.trace-nlabel{font-size:.5rem}
+.trace-amount{font-size:.55rem;padding:1px 5px}
+}
+/* Scenario dots indicator */
+.trace-scenario-indicator{display:flex;justify-content:center;gap:8px;margin:16px 0 0}
+.trace-dot{width:8px;height:8px;border-radius:50%;background:rgba(148,163,184,.25);
+transition:background .4s ease,transform .4s ease}
+.trace-dot.active{background:var(--accent);transform:scale(1.3)}
+
+
 /* ── DIVIDER ── */
 .section-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);
 margin:0 auto;max-width:600px}
@@ -463,6 +559,7 @@ section{padding:60px 16px}
 <button class="nav-toggle" id="navToggle" aria-label="Menu">&#9776;</button>
 <div class="nav-right">
 <ul class="nav-links" id="navLinks">
+<li><a href="#network-trace" data-i18n="nav_trace">Network Trace</a></li>
 <li><a href="#scenarios" data-i18n="nav_scenarios">Scenarios</a></li>
 <li><a href="#capabilities" data-i18n="nav_capabilities">Capabilities</a></li>
 <li><a href="#detection" data-i18n="nav_detection">Detection</a></li>
@@ -495,11 +592,76 @@ section{padding:60px 16px}
 <p data-i18n="hero_sub">AI-powered intelligence platform that detects money laundering, fraud networks, and financial crime in real time. Deployed on your infrastructure. Under your control.</p>
 <a href="#contact" class="btn btn-primary" data-i18n="hero_cta">Request a Demo</a>
 </div>
-<div class="scroll-indicator" onclick="document.getElementById('scenarios').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
+<div class="scroll-indicator" onclick="document.getElementById('network-trace').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
 <span>SCROLL</span>
 <div class="arrow"></div>
 </div>
 </section>
+
+<div class="section-divider"></div>
+<section id="network-trace" class="trace-section">
+<div class="container">
+<div class="section-label reveal" data-i18n="trace_label">Flagship Feature</div>
+<div class="section-title reveal" data-i18n="trace_title">Network Trace</div>
+<div class="section-sub reveal" data-i18n="trace_sub">Enter a name. Uncover the entire network.</div>
+
+<div class="trace-demo reveal">
+<!-- Simulated search bar -->
+<div class="trace-search" id="traceSearch">
+<span class="search-icon">🔍</span>
+<span id="traceTyped"></span><span class="trace-cursor" id="traceCursor"></span>
+</div>
+
+<!-- Scenario indicator -->
+<div class="trace-scenario-indicator" id="traceIndicator">
+<span class="trace-dot active" id="traceDot0"></span>
+<span class="trace-dot" id="traceDot1"></span>
+<span class="trace-dot" id="traceDot2"></span>
+</div>
+
+<!-- Animated network graph — dynamically populated by JS -->
+<div class="trace-graph" id="traceGraph">
+<svg class="trace-lines" id="traceLines" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+
+<!-- Detection badges -->
+<div class="trace-detect" id="traceDetect1"><span id="traceBadgeText"></span></div>
+<div class="trace-detect trace-detect-secondary" id="traceDetect2">
+<span id="traceRiskLabel">Risk Score: </span><strong id="traceRiskNum">0</strong><span>/100</span>
+</div>
+<div class="trace-detect trace-detect-sar" id="traceDetect3">
+<span data-i18n="trace_sar">📋 SAR Recommended — Auto-generated</span>
+</div>
+</div>
+
+<!-- Capability cards -->
+<div class="trace-capabilities">
+<div class="trace-cap-card reveal">
+<span class="cap-emoji">🌐</span>
+<h4 data-i18n="trace_cap1_title">Auto-Expand</h4>
+<p data-i18n="trace_cap1_desc">One seed entity reveals the full network. No manual digging required.</p>
+</div>
+<div class="trace-cap-card reveal">
+<span class="cap-emoji">🔗</span>
+<h4 data-i18n="trace_cap2_title">Path Finding</h4>
+<p data-i18n="trace_cap2_desc">Find hidden connections between any two entities. Up to 4-hop BFS traversal.</p>
+</div>
+<div class="trace-cap-card reveal">
+<span class="cap-emoji">🎯</span>
+<h4 data-i18n="trace_cap3_title">Pattern Detection</h4>
+<p data-i18n="trace_cap3_desc">25+ AML/CFT patterns detected automatically as the network builds.</p>
+</div>
+<div class="trace-cap-card reveal">
+<span class="cap-emoji">⏱️</span>
+<h4 data-i18n="trace_cap4_title">Time Analysis</h4>
+<p data-i18n="trace_cap4_desc">Filter by date range. Watch how criminal networks evolve over time.</p>
+</div>
+</div>
+
+</div>
+</section>
+<div class="section-divider"></div>
+
 
 <!-- INVESTIGATION SCENARIOS -->
 <section id="scenarios" class="scenarios-section">
@@ -1172,6 +1334,9 @@ section{padding:60px 16px}
 </div><!-- /scenario-panels -->
 
 </section>
+
+<!-- NETWORK TRACE SECTION - CSS + HTML -->
+
 
 <section id="capabilities">
 <div class="container">
@@ -1891,7 +2056,15 @@ sc3_sum_desc:"From a single device fingerprint to a complete network map — Lay
 sc3_f1_title:"Device Intelligence",sc3_f1_desc:"Fingerprint matching across accounts and sessions",
 sc3_f2_title:"Behavioral Timing",sc3_f2_desc:"Detects coordinated deposit-withdraw cycles",
 sc3_f3_title:"Cross-Border Ops",sc3_f3_desc:"Multi-jurisdiction freeze and coordination",
-sc3_f4_title:"LE Packages",sc3_f4_desc:"Court-ready evidence bundles with full audit trail"
+sc3_f4_title:"LE Packages",sc3_f4_desc:"Court-ready evidence bundles with full audit trail",
+trace_label:"Flagship Feature",trace_title:"Network Trace",trace_sub:"Enter a name. Uncover the entire network.",
+trace_badge:"🎯 Pattern Detected: Layering + Fan-out",
+trace_risk:"Risk Score: ",trace_sar:"📋 SAR Recommended — Auto-generated",
+trace_cap1_title:"Auto-Expand",trace_cap1_desc:"One seed entity reveals the full network. No manual digging required.",
+trace_cap2_title:"Path Finding",trace_cap2_desc:"Find hidden connections between any two entities. Up to 4-hop BFS traversal.",
+trace_cap3_title:"Pattern Detection",trace_cap3_desc:"25+ AML/CFT patterns detected automatically as the network builds.",
+trace_cap4_title:"Time Analysis",trace_cap4_desc:"Filter by date range. Watch how criminal networks evolve over time.",
+nav_trace:"Network Trace"
 },
 tr: {
 nav_capabilities:"Yetenekler",nav_detection:"Tespit",nav_solutions:"Çözümler",
@@ -2011,7 +2184,15 @@ sc3_sum_desc:"Tek bir cihaz parmak izinden eksiksiz ağ haritasına — Layer.ON
 sc3_f1_title:"Cihaz İstihbaratı",sc3_f1_desc:"Hesaplar ve oturumlar arasında parmak izi eşleştirme",
 sc3_f2_title:"Davranışsal Zamanlama",sc3_f2_desc:"Koordineli yatırma-çekme döngülerini tespit eder",
 sc3_f3_title:"Sınır Ötesi Operasyonlar",sc3_f3_desc:"Çok yargı yetkili dondurma ve koordinasyon",
-sc3_f4_title:"Kolluk Kuvveti Paketleri",sc3_f4_desc:"Tam denetim iziyle mahkemeye hazır kanıt paketleri"
+sc3_f4_title:"Kolluk Kuvveti Paketleri",sc3_f4_desc:"Tam denetim iziyle mahkemeye hazır kanıt paketleri",
+trace_label:"Amiral Gemisi Özellik",trace_title:"Ağ Takibi",trace_sub:"Bir isim girin. Tüm ağı ortaya çıkarın.",
+trace_badge:"🎯 Kalıp Tespit Edildi: Katmanlama + Yayılma",
+trace_risk:"Risk Skoru: ",trace_sar:"📋 SAR Önerildi — Otomatik oluşturuldu",
+trace_cap1_title:"Otomatik Genişleme",trace_cap1_desc:"Tek bir varlık tüm ağı ortaya çıkarır. Manuel araştırma gerekmez.",
+trace_cap2_title:"Yol Bulma",trace_cap2_desc:"Herhangi iki varlık arasındaki gizli bağlantıları keşfedin. 4 atlamalı BFS geçişi.",
+trace_cap3_title:"Kalıp Tespiti",trace_cap3_desc:"Ağ oluşturulurken 25+ AML/CFT kalıbı otomatik olarak tespit edilir.",
+trace_cap4_title:"Zaman Analizi",trace_cap4_desc:"Tarih aralığına göre filtreleyin. Suç ağlarının zaman içinde nasıl geliştiğini izleyin.",
+nav_trace:"Ağ Takibi"
 }
 };
 
@@ -2192,6 +2373,380 @@ btn.disabled = false;
 return false;
 }
 </script>
-<script></script>
+<script>
+/* ── Network Trace Cinematic Animation — 3 Scenarios ── */
+(function(){
+var typedEl = document.getElementById('traceTyped');
+var cursorEl = document.getElementById('traceCursor');
+var searchEl = document.getElementById('traceSearch');
+var traceGraph = document.getElementById('traceGraph');
+var svgLines = document.getElementById('traceLines');
+var detect1 = document.getElementById('traceDetect1');
+var detect2 = document.getElementById('traceDetect2');
+var detect3 = document.getElementById('traceDetect3');
+var riskNum = document.getElementById('traceRiskNum');
+var badgeText = document.getElementById('traceBadgeText');
+if (!typedEl || !searchEl || !traceGraph) return;
+
+/* ─── 3 SCENARIO DATA ─── */
+var SCENARIOS = [
+/* ═══ Scenario 1: Meridian Holdings — Layering ═══ */
+{
+searchText: 'Meridian Holdings LLC',
+badge: '🎯 Pattern Detected: Layering (3 layers) + Fan-out (4 targets)',
+riskScore: 94,
+center: {type:'flagged',icon:'⚠',label:'Meridian Holdings',x:50,y:50},
+ring1: [
+  {type:'account',icon:'A',label:'Acc ****3921',x:50,y:12},
+  {type:'company',icon:'C',label:'Apex Trading',x:80,y:24},
+  {type:'person',icon:'P',label:'Viktor S.',x:85,y:55},
+  {type:'account',icon:'A',label:'Acc ****8812',x:68,y:84},
+  {type:'device',icon:'🏠',label:'Villa Bodrum',x:32,y:84},
+  {type:'company',icon:'C',label:'Zenith GmbH',x:15,y:55},
+  {type:'person',icon:'P',label:'A. Yılmaz',x:20,y:24}
+],
+ring2: [
+  {type:'person',icon:'P',label:'K. Petrov',x:62,y:3,parent:0},
+  {type:'account',icon:'A',label:'Acc ****5504',x:93,y:14,parent:1},
+  {type:'company',icon:'C',label:'Nova SA',x:96,y:42,parent:2},
+  {type:'account',icon:'A',label:'Acc ****2207',x:18,y:95,parent:4},
+  {type:'device',icon:'🏠',label:'Flat Dubai',x:4,y:42,parent:5},
+  {type:'person',icon:'P',label:'M. Hassan',x:7,y:14,parent:6}
+],
+crossEdges: [
+  {from:{x:80,y:24},to:{x:85,y:55}},
+  {from:{x:15,y:55},to:{x:32,y:84}},
+  {from:{x:93,y:14},to:{x:96,y:42}},
+  {from:{x:50,y:12},to:{x:20,y:24}}
+],
+amounts: [
+  {text:'⚠ $2.4M',x:82,y:38},
+  {text:'⚠ $890K',x:22,y:68},
+  {text:'⚠ $1.1M',x:94,y:27},
+  {text:'⚠ $670K',x:34,y:16}
+]
+},
+/* ═══ Scenario 2: Ahmad Al-Rashidi — PEP Network ═══ */
+{
+searchText: 'Ahmad Al-Rashidi',
+badge: '🎯 Pattern Detected: PEP Exposure + Circular Flow',
+riskScore: 87,
+center: {type:'person flagged',icon:'👤',label:'Ahmad Al-Rashidi',x:50,y:50},
+ring1: [
+  {type:'company',icon:'🏢',label:'Al-Rashidi Group',x:50,y:10},
+  {type:'account',icon:'🏦',label:'Acc ****6622',x:82,y:30},
+  {type:'company',icon:'🏢',label:'Gulf Star Trading',x:82,y:70},
+  {type:'person',icon:'👤',label:'Fatima Al-R.',x:50,y:90},
+  {type:'device',icon:'🏠',label:'Penthouse London',x:18,y:70}
+],
+ring2: [
+  {type:'account',icon:'🏦',label:'Acc ****1190',x:68,y:3,parent:0},
+  {type:'company',icon:'🏢',label:'Noor Investments',x:96,y:50,parent:2},
+  {type:'person',icon:'👤',label:'Diplomatic Staff',x:30,y:95,parent:3},
+  {type:'device',icon:'🏠',label:'Yacht Monaco',x:4,y:50,parent:4}
+],
+crossEdges: [
+  {from:{x:82,y:30},to:{x:82,y:70}},
+  {from:{x:50,y:10},to:{x:18,y:70}},
+  {from:{x:96,y:50},to:{x:30,y:95}}
+],
+amounts: [
+  {text:'⚠ $4.8M',x:84,y:50},
+  {text:'⚠ $1.7M',x:32,y:38},
+  {text:'⚠ $2.2M',x:64,y:72}
+]
+},
+/* ═══ Scenario 3: Zenith Import-Export — Mule Network ═══ */
+{
+searchText: 'Zenith Import-Export GmbH',
+badge: '🎯 Pattern Detected: Mule Network (6 mules) + Structuring',
+riskScore: 91,
+center: {type:'company flagged',icon:'🏢',label:'Zenith GmbH',x:50,y:50},
+ring1: [
+  {type:'person',icon:'👤',label:'Hans M.',x:35,y:12},
+  {type:'person',icon:'👤',label:'Elena V.',x:65,y:12},
+  {type:'person',icon:'👤',label:'Yusuf K.',x:85,y:40},
+  {type:'account',icon:'🏦',label:'Acc ****4401',x:80,y:75},
+  {type:'account',icon:'🏦',label:'Acc ****7738',x:20,y:75},
+  {type:'company',icon:'🏢',label:'Baltic Freight OÜ',x:15,y:40}
+],
+ring2: [
+  {type:'person',icon:'👤',label:'Mule 1',x:92,y:18,parent:2},
+  {type:'person',icon:'👤',label:'Mule 2',x:96,y:58,parent:3},
+  {type:'account',icon:'🏦',label:'Acc ****9903',x:50,y:96,parent:4},
+  {type:'company',icon:'🏢',label:'Shell Corp. BVI',x:4,y:58,parent:5}
+],
+crossEdges: [
+  {from:{x:35,y:12},to:{x:65,y:12}},
+  {from:{x:85,y:40},to:{x:80,y:75}},
+  {from:{x:20,y:75},to:{x:15,y:40}},
+  {from:{x:92,y:18},to:{x:96,y:58}}
+],
+amounts: [
+  {text:'⚠ $340K',x:50,y:8},
+  {text:'⚠ $280K',x:84,y:57},
+  {text:'⚠ $190K',x:16,y:57},
+  {text:'⚠ $410K',x:96,y:38}
+]
+}
+];
+
+var currentScenario = 0;
+var allTimers = [];
+var createdEls = [];
+
+function sched(fn, ms){ allTimers.push(setTimeout(fn, ms)); }
+
+function clearAll(){
+  allTimers.forEach(clearTimeout);
+  allTimers = [];
+  createdEls.forEach(function(el){ if(el && el.parentNode) el.parentNode.removeChild(el); });
+  createdEls = [];
+  svgLines.innerHTML = '';
+  typedEl.textContent = '';
+  searchEl.classList.remove('active');
+  if(cursorEl) cursorEl.style.display = 'inline-block';
+  [detect1, detect2, detect3].forEach(function(d){ if(d){ d.classList.remove('visible'); d.style.opacity=''; d.style.transition=''; }});
+  if(riskNum) riskNum.textContent = '0';
+  traceGraph.style.opacity = '1';
+  traceGraph.style.transition = 'none';
+  searchEl.style.opacity = '1';
+  searchEl.style.transition = 'none';
+}
+
+/* Update scenario dots */
+function updateDots(idx){
+  for(var i=0;i<3;i++){
+    var dot = document.getElementById('traceDot'+i);
+    if(dot){ dot.classList.toggle('active', i===idx); }
+  }
+}
+
+/* Create a DOM node */
+function makeNode(nd, isCenter, isR2){
+  var sz = isCenter ? 44 : (isR2 ? 26 : 32);
+  var offset = sz / 2;
+  var div = document.createElement('div');
+  div.className = 'graph-node ' + nd.type + ' trace-nd' + (isCenter ? ' center' : '') + (isR2 ? ' trace-r2' : '');
+  div.style.cssText = 'left:calc('+nd.x+'% - '+offset+'px);top:calc('+nd.y+'% - '+offset+'px)';
+  div.textContent = nd.icon;
+  traceGraph.appendChild(div);
+  createdEls.push(div);
+
+  var lbl = document.createElement('span');
+  lbl.className = 'trace-nlabel';
+  var lblOffset = isCenter ? 28 : (isR2 ? 18 : 20);
+  lbl.style.cssText = 'left:'+nd.x+'%;top:calc('+nd.y+'% + '+lblOffset+'px)';
+  lbl.textContent = nd.label;
+  traceGraph.appendChild(lbl);
+  createdEls.push(lbl);
+
+  return {node: div, label: lbl};
+}
+
+/* Create an SVG line */
+function makeLine(x1,y1,x2,y2,isCross){
+  var line = document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1',x1+'%');
+  line.setAttribute('y1',y1+'%');
+  line.setAttribute('x2',x2+'%');
+  line.setAttribute('y2',y2+'%');
+  if(isCross) line.classList.add('cross');
+  svgLines.appendChild(line);
+  return line;
+}
+
+/* Create amount label */
+function makeAmount(amt){
+  var span = document.createElement('span');
+  span.className = 'trace-amount';
+  span.style.cssText = 'left:'+amt.x+'%;top:'+amt.y+'%';
+  span.textContent = amt.text;
+  traceGraph.appendChild(span);
+  createdEls.push(span);
+  return span;
+}
+
+function showEl(el, cls){ if(el) el.classList.add(cls || 'visible'); }
+
+function animateRisk(target, duration){
+  if(!riskNum) return;
+  var start = 0; var step = Math.ceil(target / (duration / 30));
+  var iv = setInterval(function(){
+    start += step;
+    if(start >= target){ start = target; clearInterval(iv); }
+    riskNum.textContent = String(start);
+  }, 30);
+}
+
+function typeText(text, cb){
+  searchEl.classList.add('active');
+  var idx = 0;
+  var iv = setInterval(function(){
+    if(idx < text.length){
+      typedEl.textContent += text[idx]; idx++;
+    } else {
+      clearInterval(iv);
+      if(cursorEl) cursorEl.style.display='none';
+      if(cb) cb();
+    }
+  }, 100);
+}
+
+function runCycle(){
+  clearAll();
+  var sc = SCENARIOS[currentScenario];
+  updateDots(currentScenario);
+
+  /* Build DOM elements for this scenario */
+  var centerEls = makeNode(sc.center, true, false);
+  var r1Els = sc.ring1.map(function(nd){ return makeNode(nd, false, false); });
+  var r2Els = sc.ring2.map(function(nd){ return makeNode(nd, false, true); });
+
+  /* Build edges center → ring1 */
+  var edgesR1 = sc.ring1.map(function(nd){
+    return makeLine(sc.center.x, sc.center.y, nd.x, nd.y, false);
+  });
+
+  /* Build edges ring1 → ring2 */
+  var edgesR2 = sc.ring2.map(function(nd){
+    var parent = sc.ring1[nd.parent];
+    return makeLine(parent.x, parent.y, nd.x, nd.y, false);
+  });
+
+  /* Build cross-edges */
+  var edgesCross = sc.crossEdges.map(function(e){
+    return makeLine(e.from.x, e.from.y, e.to.x, e.to.y, true);
+  });
+
+  /* Build amount labels */
+  var amountEls = sc.amounts.map(function(a){ return makeAmount(a); });
+
+  /* Set badge text */
+  if(badgeText) badgeText.textContent = sc.badge;
+
+  var t = 0;
+
+  /* ═══ Phase 1: Typewriter (0–3s) ═══ */
+  sched(function(){ typeText(sc.searchText, function(){}); }, 0);
+  t = 3000;
+
+  /* ═══ Phase 2: Seed entity (3–5s) ═══ */
+  sched(function(){
+    showEl(centerEls.node);
+    showEl(centerEls.label);
+    centerEls.node.classList.add('pulsing');
+  }, t);
+  t += 2000;
+
+  /* ═══ Phase 3: Ring 1 — staggered (5–12s) ═══ */
+  r1Els.forEach(function(els, i){
+    var edgeDelay = t + i * 1000;
+    var nodeDelay = edgeDelay + 400;
+    sched(function(){ showEl(edgesR1[i]); }, edgeDelay);
+    sched(function(){
+      showEl(els.node);
+      showEl(els.label);
+    }, nodeDelay);
+  });
+  t += sc.ring1.length * 1000;
+
+  /* ═══ Phase 4: Ring 2 + cross edges (12–20s) ═══ */
+  r2Els.forEach(function(els, i){
+    var edgeDelay = t + i * 1100;
+    var nodeDelay = edgeDelay + 400;
+    sched(function(){ showEl(edgesR2[i]); }, edgeDelay);
+    sched(function(){
+      showEl(els.node);
+      showEl(els.label);
+    }, nodeDelay);
+  });
+  t += sc.ring2.length * 1100;
+
+  sched(function(){
+    edgesCross.forEach(function(e, i){
+      sched(function(){ showEl(e); }, i * 400);
+    });
+  }, t);
+  t += edgesCross.length * 400 + 500;
+
+  /* ═══ Phase 5: Suspicious activity (20–27s) ═══ */
+  sched(function(){
+    if(centerEls.node) centerEls.node.classList.remove('pulsing');
+  }, t);
+
+  edgesCross.forEach(function(e, i){
+    sched(function(){ if(e) e.classList.add('flagged-red'); }, t + i * 800);
+  });
+  amountEls.forEach(function(a, i){
+    sched(function(){ showEl(a); }, t + i * 800 + 400);
+  });
+
+  /* Pulse some ring1 nodes */
+  var pulseCount = Math.min(4, sc.ring1.length);
+  var pulseNodes = [];
+  for(var pi=0; pi<pulseCount; pi++) pulseNodes.push(r1Els[pi]);
+  sched(function(){
+    pulseNodes.forEach(function(els){ if(els && els.node) els.node.classList.add('pulsing'); });
+  }, t + 1200);
+  sched(function(){
+    pulseNodes.forEach(function(els){ if(els && els.node) els.node.classList.remove('pulsing'); });
+  }, t + 3500);
+  t += edgesCross.length * 800 + 2000;
+
+  /* ═══ Phase 6: Detection results (27–33s) ═══ */
+  sched(function(){ showEl(detect1); }, t);
+  sched(function(){
+    showEl(detect2);
+    animateRisk(sc.riskScore, 1200);
+  }, t + 1500);
+  sched(function(){ showEl(detect3); }, t + 3000);
+  t += 4500;
+
+  /* ═══ Phase 7: Hold & fade (33–38s) ═══ */
+  sched(function(){
+    traceGraph.style.transition = 'opacity 1.2s ease';
+    traceGraph.style.opacity = '0';
+    searchEl.style.transition = 'opacity 1.2s ease';
+    searchEl.style.opacity = '0';
+    [detect1, detect2, detect3].forEach(function(d){
+      if(d){ d.style.transition = 'opacity 1.2s ease'; d.style.opacity = '0'; }
+    });
+  }, t + 3000);
+
+  /* Next scenario */
+  sched(function(){
+    currentScenario = (currentScenario + 1) % SCENARIOS.length;
+    sched(runCycle, 800);
+  }, t + 4500);
+}
+
+/* IntersectionObserver — start when visible */
+var running = false;
+var section = document.getElementById('network-trace');
+if (!section) return;
+
+if ('IntersectionObserver' in window) {
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if (entry.isIntersecting && !running) {
+        running = true;
+        sched(runCycle, 400);
+      }
+      if (!entry.isIntersecting && running) {
+        running = false;
+        clearAll();
+        currentScenario = 0;
+        updateDots(0);
+      }
+    });
+  }, {threshold: 0.15});
+  obs.observe(section);
+} else {
+  sched(runCycle, 1000);
+}
+})();
+
+</script>
 </body>
 </html>
