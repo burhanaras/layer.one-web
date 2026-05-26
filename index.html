@@ -2493,6 +2493,7 @@ amounts: [
 
 var currentScenario = 0;
 var allTimers = [];
+var allIntervals = [];
 var createdEls = [];
 
 function sched(fn, ms){ allTimers.push(setTimeout(fn, ms)); }
@@ -2500,6 +2501,8 @@ function sched(fn, ms){ allTimers.push(setTimeout(fn, ms)); }
 function clearAll(){
   allTimers.forEach(clearTimeout);
   allTimers = [];
+  allIntervals.forEach(clearInterval);
+  allIntervals = [];
   createdEls.forEach(function(el){ if(el && el.parentNode) el.parentNode.removeChild(el); });
   createdEls = [];
   svgLines.innerHTML = '';
@@ -2577,6 +2580,7 @@ function animateRisk(target, duration){
     if(start >= target){ start = target; clearInterval(iv); }
     riskNum.textContent = String(start);
   }, 30);
+  allIntervals.push(iv);
 }
 
 function typeText(text, cb){
@@ -2591,6 +2595,7 @@ function typeText(text, cb){
       if(cb) cb();
     }
   }, 100);
+  allIntervals.push(iv);
 }
 
 function runCycle(){
