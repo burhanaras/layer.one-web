@@ -50,10 +50,10 @@ font-weight:600;text-transform:uppercase;letter-spacing:0.08em}
 }
 
 /* ── HERO NETWORK VIZ ── */
-.hero-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+.hero-row{display:grid;grid-template-columns:1fr 1.15fr;gap:48px;align-items:center;
 max-width:1200px;margin:0 auto;padding:0 24px}
-.hero-viz{position:relative;height:420px;border-radius:16px;
-border:1px solid var(--border);background:rgba(17,24,39,.6);
+.hero-viz{position:relative;height:480px;border-radius:16px;
+border:1px solid var(--border);background:rgba(12,14,22,.85);
 overflow:hidden;box-shadow:0 24px 80px -12px rgba(0,0,0,.5),0 0 60px -20px var(--accentGlow)}
 .hero-viz-header{display:flex;align-items:center;gap:8px;padding:14px 18px;
 background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
@@ -63,7 +63,7 @@ background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
 .hero-viz canvas{display:block;width:100%;height:calc(100% - 44px)}
 @media(max-width:1024px){
 .hero-row{grid-template-columns:1fr;gap:40px}
-.hero-viz{height:340px}
+.hero-viz{height:380px}
 }
 
 /* ── SCENARIOS ── */
@@ -256,14 +256,14 @@ width:900px;height:900px;background:radial-gradient(circle,var(--accentGlow) 0%,
 .hero-overlay{position:absolute;top:0;left:0;width:100%;height:100%;
 background:linear-gradient(180deg,rgba(10,14,23,.5) 0%,rgba(10,14,23,.88) 100%)}
 .hero-content{position:relative;z-index:2;text-align:left;padding:0;max-width:540px}
-.hero h1{font-size:clamp(2.8rem,6vw,5rem);font-weight:900;
-line-height:0.95;margin-bottom:24px;letter-spacing:-0.05em}
+.hero h1{font-size:clamp(3.2rem,7.5vw,5.8rem);font-weight:900;
+line-height:0.9;margin-bottom:32px;letter-spacing:-0.06em}
 .hero h1 em{font-style:normal;
 background:linear-gradient(135deg,var(--accent) 20%,#ffffff 80%);
 -webkit-background-clip:text;background-clip:text;color:transparent;
 text-shadow:none}
 .hero-brand{font-family:var(--mono);font-size:.78rem;font-weight:600;
-letter-spacing:0.14em;color:var(--accent);margin-bottom:28px;
+letter-spacing:0.14em;color:var(--accent);margin-bottom:32px;
 text-transform:uppercase;
 display:inline-flex;align-items:center;gap:10px;
 padding:8px 16px;border:1px solid rgba(0,212,255,.2);
@@ -2896,162 +2896,365 @@ function resize(){
 resize();
 window.addEventListener('resize', resize);
 
-var nodes = [];
-var edges = [];
-var accent = [0, 212, 255];
-var danger = [239, 68, 68];
-var success = [16, 185, 129];
-var warning = [245, 158, 11];
+/* Colors */
+var C = {
+  accent:[0,212,255], danger:[239,68,68], success:[16,185,129],
+  warning:[245,158,11], purple:[167,139,250], muted:[148,163,184]
+};
 
-var types = [
-  {label:'ACC',color:accent,r:14},
-  {label:'LLC',color:warning,r:16},
-  {label:'PEP',color:danger,r:15},
-  {label:'BNK',color:accent,r:13},
-  {label:'DEV',color:success,r:11},
+function rgba(c,a){return 'rgba('+c[0]+','+c[1]+','+c[2]+','+a+')'}
+
+/* Scenario data — realistic entities */
+var scenarios = [
+  {
+    seed:{label:'Meridian Holdings',type:'company'},
+    steps:[
+      [
+        {label:'Deutsche Bank AG',type:'bank',edge:{amount:'$2.4M',flagged:true}},
+        {label:'Meridian RE LLC',type:'company',edge:{amount:'$890K',flagged:false}},
+        {label:'V. Petrov',type:'person',edge:{amount:'$1.1M',flagged:true}},
+      ],
+      [
+        {label:'Cayman Acct ••4871',type:'account',parent:0,edge:{amount:'$620K',flagged:true}},
+        {label:'Dubai Marina Villa',type:'asset',parent:1,edge:{amount:'$1.2M',flagged:false}},
+        {label:'Nova Trading GmbH',type:'company',parent:2,edge:{amount:'$340K',flagged:true}},
+        {label:'BVI Shell Co.',type:'company',parent:0,edge:{amount:'$1.8M',flagged:true}},
+      ],
+      [
+        {label:'Zenith Bank Cyprus',type:'bank',parent:3,edge:{amount:'$410K',flagged:true}},
+        {label:'M. Al-Rashidi',type:'person',parent:5,edge:{amount:'$95K',flagged:false}},
+        {label:'Acct ••7293',type:'account',parent:6,edge:{amount:'$760K',flagged:true}},
+      ]
+    ]
+  },
+  {
+    seed:{label:'R.O. Kütahyalı',type:'person'},
+    steps:[
+      [
+        {label:'Yapı Kredi',type:'bank',edge:{amount:'₺46M',flagged:true}},
+        {label:'Garanti BBVA',type:'bank',edge:{amount:'₺12M',flagged:true}},
+        {label:'B. Özyetgin',type:'person',edge:{amount:'₺35M',flagged:true}},
+      ],
+      [
+        {label:'e-Para Ltd.',type:'company',parent:0,edge:{amount:'₺15.7M',flagged:true}},
+        {label:'Jaguar F-Type',type:'asset',parent:2,edge:{amount:'₺4.2M',flagged:false}},
+        {label:'Çengelköy Villa',type:'asset',parent:2,edge:{amount:'₺8.9M',flagged:true}},
+        {label:'İş Bankası',type:'bank',parent:1,edge:{amount:'₺6.3M',flagged:true}},
+      ],
+      [
+        {label:'Range Rover SVR',type:'asset',parent:2,edge:{amount:'₺3.1M',flagged:false}},
+        {label:'Sarıyer Apt.',type:'asset',parent:5,edge:{amount:'₺2.7M',flagged:true}},
+        {label:'Mule Acct ••1847',type:'account',parent:3,edge:{amount:'₺9.2M',flagged:true}},
+      ]
+    ]
+  },
+  {
+    seed:{label:'Ahmad Al-Rashidi',type:'person'},
+    steps:[
+      [
+        {label:'HSBC Dubai',type:'bank',edge:{amount:'$380K',flagged:false}},
+        {label:'Property LLC',type:'company',edge:{amount:'$1.2M',flagged:true}},
+        {label:'Personal Acct ••3091',type:'account',edge:{amount:'$420K',flagged:false}},
+      ],
+      [
+        {label:'Palm Jumeirah Villa',type:'asset',parent:1,edge:{amount:'$1.2M',flagged:true}},
+        {label:'Mercedes S-Class',type:'asset',parent:2,edge:{amount:'$185K',flagged:false}},
+        {label:'Emirates NBD',type:'bank',parent:0,edge:{amount:'$290K',flagged:false}},
+      ],
+      [
+        {label:'Offshore Trust',type:'company',parent:5,edge:{amount:'$510K',flagged:true}},
+        {label:'London Acct ••6142',type:'account',parent:3,edge:{amount:'$340K',flagged:true}},
+      ]
+    ]
+  }
 ];
 
-function rnd(a,b){return a+Math.random()*(b-a)}
+/* Type → visual config */
+var typeConf = {
+  company: {color:C.warning, icon:'◆', r:20},
+  bank:    {color:C.accent,  icon:'◈', r:18},
+  person:  {color:C.purple,  icon:'●', r:18},
+  account: {color:C.muted,   icon:'◎', r:16},
+  asset:   {color:[255,215,100], icon:'★', r:16},
+};
 
-function spawnNetwork(){
+var nodes = [], edges = [];
+var scenarioIdx = 0;
+var stepIdx = -1; // -1 = only seed visible
+var frame = 0;
+var stageTimer = 0;
+var STAGE_DELAY = 90; // frames between steps
+var HOLD_DELAY = 280; // frames to hold complete network
+var FADE_DELAY = 80;  // frames to fade out
+var stage = 'grow'; // grow | hold | fade
+
+function layoutAngle(i, total){
+  return (Math.PI * 2 / total) * i - Math.PI/2;
+}
+
+function initScenario(){
+  var sc = scenarios[scenarioIdx % scenarios.length];
   nodes = []; edges = [];
-  var cx = W/2, cy = H/2;
-  // Central node
-  var center = {x:cx, y:cy, vx:0, vy:0, r:22, label:'SEED', color:danger, alpha:0, targetAlpha:1};
-  nodes.push(center);
+  stepIdx = -1;
+  stageTimer = 0;
+  stage = 'grow';
 
-  var ring1 = 5 + Math.floor(Math.random()*3);
-  for(var i=0;i<ring1;i++){
-    var a = (Math.PI*2/ring1)*i + rnd(-0.2,0.2);
-    var d = rnd(80,130);
-    var t = types[Math.floor(Math.random()*types.length)];
-    var n = {x:cx+Math.cos(a)*d, y:cy+Math.sin(a)*d, vx:rnd(-0.15,0.15), vy:rnd(-0.15,0.15),
-      r:t.r, label:t.label, color:t.color, alpha:0, targetAlpha:1};
-    nodes.push(n);
-    edges.push({a:0,b:nodes.length-1, alpha:0, targetAlpha:0.5,
-      flagged: Math.random()>0.6, amount: Math.floor(rnd(10,800))+'K'});
-  }
+  var conf = typeConf[sc.seed.type];
+  nodes.push({
+    x: W/2, y: H/2, tx: W/2, ty: H/2,
+    r: 26, label: sc.seed.label, type: sc.seed.type,
+    color: conf.color, icon: conf.icon,
+    alpha: 0, targetAlpha: 1, step: -1
+  });
+}
 
-  var ring2 = 4 + Math.floor(Math.random()*4);
-  for(var j=0;j<ring2;j++){
-    var parent = 1 + Math.floor(Math.random()*ring1);
-    var a2 = Math.atan2(nodes[parent].y-cy, nodes[parent].x-cx) + rnd(-0.6,0.6);
-    var d2 = rnd(140,200);
-    var t2 = types[Math.floor(Math.random()*types.length)];
-    var n2 = {x:cx+Math.cos(a2)*d2, y:cy+Math.sin(a2)*d2, vx:rnd(-0.1,0.1), vy:rnd(-0.1,0.1),
-      r:t2.r, label:t2.label, color:t2.color, alpha:0, targetAlpha:0.7};
-    nodes.push(n2);
-    edges.push({a:parent,b:nodes.length-1, alpha:0, targetAlpha:0.3,
-      flagged: Math.random()>0.7, amount: Math.floor(rnd(5,200))+'K'});
+function addStep(){
+  var sc = scenarios[scenarioIdx % scenarios.length];
+  stepIdx++;
+  if(stepIdx >= sc.steps.length) return false;
+
+  var items = sc.steps[stepIdx];
+  var ring = stepIdx + 1;
+  var radius = 70 + ring * 65;
+  var parentNodes = [];
+
+  // Collect which parent indices these connect to
+  items.forEach(function(item){
+    var pIdx = item.parent !== undefined ? item.parent + 1 : 0; // +1 because seed is 0
+    parentNodes.push(pIdx);
+  });
+
+  items.forEach(function(item, i){
+    var conf = typeConf[item.type];
+    var parentIdx = item.parent !== undefined ? item.parent + 1 : 0;
+    var parentNode = nodes[parentIdx];
+
+    // Calculate position: spread around parent
+    var baseAngle = Math.atan2(parentNode.ty - H/2, parentNode.tx - W/2);
+    if(parentIdx === 0) baseAngle = layoutAngle(i, items.length);
+    var spread = (items.length > 1) ? (i - (items.length-1)/2) * 0.5 : 0;
+    var angle = baseAngle + spread;
+    var dist = radius;
+
+    var tx = W/2 + Math.cos(angle) * dist;
+    var ty = H/2 + Math.sin(angle) * dist;
+
+    // Clamp to bounds
+    tx = Math.max(60, Math.min(W - 60, tx));
+    ty = Math.max(40, Math.min(H - 40, ty));
+
+    nodes.push({
+      x: parentNode.tx, y: parentNode.ty, // start from parent
+      tx: tx, ty: ty,
+      r: conf.r, label: item.label, type: item.type,
+      color: conf.color, icon: conf.icon,
+      alpha: 0, targetAlpha: 1, step: stepIdx
+    });
+
+    edges.push({
+      from: parentIdx, to: nodes.length - 1,
+      amount: item.edge.amount,
+      flagged: item.edge.flagged,
+      alpha: 0, targetAlpha: 1, step: stepIdx
+    });
+  });
+
+  return true;
+}
+
+function drawEdge(na, nb, edge){
+  var ea = Math.min(na.alpha, nb.alpha) * edge.alpha;
+  if(ea < 0.01) return;
+
+  // Curved edge
+  var mx = (na.x + nb.x) / 2;
+  var my = (na.y + nb.y) / 2;
+  var dx = nb.x - na.x, dy = nb.y - na.y;
+  var cx = mx + dy * 0.1, cy = my - dx * 0.1;
+
+  ctx.beginPath();
+  ctx.moveTo(na.x, na.y);
+  ctx.quadraticCurveTo(cx, cy, nb.x, nb.y);
+
+  if(edge.flagged){
+    ctx.strokeStyle = rgba(C.danger, ea * 0.6);
+    ctx.setLineDash([5, 4]);
+    ctx.lineWidth = 1.8;
+  } else {
+    ctx.strokeStyle = rgba(C.accent, ea * 0.35);
+    ctx.setLineDash([]);
+    ctx.lineWidth = 1.2;
   }
-  // Some cross-edges
-  for(var k=0;k<3;k++){
-    var ea = 1+Math.floor(Math.random()*(nodes.length-1));
-    var eb = 1+Math.floor(Math.random()*(nodes.length-1));
-    if(ea!==eb) edges.push({a:ea,b:eb,alpha:0,targetAlpha:0.2,flagged:Math.random()>0.5,amount:''});
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Arrow head
+  var t = 0.85;
+  var ax = (1-t)*(1-t)*na.x + 2*(1-t)*t*cx + t*t*nb.x;
+  var ay = (1-t)*(1-t)*na.y + 2*(1-t)*t*cy + t*t*nb.y;
+  var t2 = 0.83;
+  var bx = (1-t2)*(1-t2)*na.x + 2*(1-t2)*t2*cx + t2*t2*nb.x;
+  var by = (1-t2)*(1-t2)*na.y + 2*(1-t2)*t2*cy + t2*t2*nb.y;
+  var ang = Math.atan2(ay-by, ax-bx);
+  var aSize = 6;
+  ctx.beginPath();
+  ctx.moveTo(ax, ay);
+  ctx.lineTo(ax - aSize*Math.cos(ang-0.4), ay - aSize*Math.sin(ang-0.4));
+  ctx.lineTo(ax - aSize*Math.cos(ang+0.4), ay - aSize*Math.sin(ang+0.4));
+  ctx.closePath();
+  ctx.fillStyle = edge.flagged ? rgba(C.danger, ea*0.7) : rgba(C.accent, ea*0.5);
+  ctx.fill();
+
+  // Amount label
+  if(edge.amount && ea > 0.4){
+    ctx.font = '700 9px JetBrains Mono, monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillStyle = edge.flagged ? rgba(C.danger, ea*0.9) : rgba(C.accent, ea*0.7);
+    ctx.fillText(edge.amount, mx + dy*0.1, my - dx*0.1 - 6);
   }
 }
 
-var tick = 0;
-var phase = 0; // 0=building, 1=idle, 2=fade out
-var phaseTimer = 0;
+function drawNode(nd){
+  if(nd.alpha < 0.01) return;
+  var a = nd.alpha;
+
+  // Outer glow
+  var grad = ctx.createRadialGradient(nd.x, nd.y, nd.r, nd.x, nd.y, nd.r + 12);
+  grad.addColorStop(0, rgba(nd.color, a*0.1));
+  grad.addColorStop(1, 'transparent');
+  ctx.fillStyle = grad;
+  ctx.fillRect(nd.x - nd.r - 12, nd.y - nd.r - 12, (nd.r+12)*2, (nd.r+12)*2);
+
+  // Circle fill
+  ctx.beginPath();
+  ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI*2);
+  ctx.fillStyle = rgba(nd.color, a * 0.12);
+  ctx.fill();
+
+  // Circle stroke
+  ctx.strokeStyle = rgba(nd.color, a * 0.7);
+  ctx.lineWidth = nd.step === -1 ? 2.5 : 1.8;
+  ctx.stroke();
+
+  // Icon
+  ctx.font = (nd.step === -1 ? '12' : '10') + 'px sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = rgba(nd.color, a * 0.8);
+  ctx.fillText(nd.icon, nd.x, nd.y);
+
+  // Label below
+  var labelText = nd.label;
+  if(labelText.length > 18) labelText = labelText.substring(0,17) + '…';
+  ctx.font = '600 ' + (nd.step === -1 ? '10' : '9') + 'px Inter, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillStyle = rgba([241,245,249], a * 0.85);
+  ctx.fillText(labelText, nd.x, nd.y + nd.r + 6);
+
+  // Type tag
+  ctx.font = '700 7px JetBrains Mono, monospace';
+  ctx.fillStyle = rgba(nd.color, a * 0.5);
+  ctx.fillText(nd.type.toUpperCase(), nd.x, nd.y + nd.r + 19);
+}
 
 function animate(){
   requestAnimationFrame(animate);
-  ctx.clearRect(0,0,W,H);
-  tick++;
+  ctx.clearRect(0, 0, W, H);
+  frame++;
+  stageTimer++;
 
-  // Phase management
-  phaseTimer++;
-  if(phase===0 && phaseTimer>120){phase=1;phaseTimer=0;}
-  if(phase===1 && phaseTimer>200){phase=2;phaseTimer=0;}
-  if(phase===2 && phaseTimer>60){phase=0;phaseTimer=0;spawnNetwork();}
+  // Stage machine
+  if(stage === 'grow'){
+    if(stageTimer >= STAGE_DELAY){
+      stageTimer = 0;
+      if(!addStep()){
+        stage = 'hold';
+        stageTimer = 0;
+      }
+    }
+  } else if(stage === 'hold'){
+    if(stageTimer >= HOLD_DELAY){
+      stage = 'fade';
+      stageTimer = 0;
+      nodes.forEach(function(n){ n.targetAlpha = 0; });
+      edges.forEach(function(e){ e.targetAlpha = 0; });
+    }
+  } else if(stage === 'fade'){
+    if(stageTimer >= FADE_DELAY){
+      scenarioIdx++;
+      initScenario();
+    }
+  }
 
-  // Update alphas
-  for(var i=0;i<nodes.length;i++){
+  // Update node positions and alpha
+  for(var i = 0; i < nodes.length; i++){
     var n = nodes[i];
-    var ta = phase===2 ? 0 : n.targetAlpha;
-    n.alpha += (ta - n.alpha) * 0.04;
-    n.x += n.vx; n.y += n.vy;
-    // Soft bounds
-    if(n.x < 30 || n.x > W-30) n.vx *= -1;
-    if(n.y < 30 || n.y > H-30) n.vy *= -1;
+    n.alpha += (n.targetAlpha - n.alpha) * 0.06;
+    n.x += (n.tx - n.x) * 0.08;
+    n.y += (n.ty - n.y) * 0.08;
+    // Gentle float
+    n.tx += Math.sin(frame * 0.008 + i * 1.7) * 0.12;
+    n.ty += Math.cos(frame * 0.006 + i * 2.3) * 0.1;
   }
 
-  // Draw edges
-  for(var e=0;e<edges.length;e++){
-    var edge = edges[e];
-    var ta2 = phase===2 ? 0 : edge.targetAlpha;
-    edge.alpha += (ta2 - edge.alpha) * 0.03;
-    var na = nodes[edge.a], nb = nodes[edge.b];
-    var ea = Math.min(na.alpha, nb.alpha, edge.alpha);
-    if(ea < 0.01) continue;
-
-    ctx.beginPath();
-    ctx.moveTo(na.x, na.y);
-    ctx.lineTo(nb.x, nb.y);
-
-    if(edge.flagged){
-      ctx.strokeStyle = 'rgba('+danger.join(',')+','+ea*0.7+')';
-      ctx.setLineDash([4,4]);
-    } else {
-      ctx.strokeStyle = 'rgba('+accent.join(',')+','+ea*0.5+')';
-      ctx.setLineDash([]);
-    }
-    ctx.lineWidth = edge.flagged ? 1.5 : 1;
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Amount label on flagged
-    if(edge.flagged && edge.amount && ea > 0.3){
-      var mx = (na.x+nb.x)/2, my = (na.y+nb.y)/2;
-      ctx.font = '600 9px JetBrains Mono, monospace';
-      ctx.fillStyle = 'rgba('+danger.join(',')+','+ea+')';
-      ctx.fillText('$'+edge.amount, mx+4, my-4);
-    }
+  // Update edge alpha
+  for(var e = 0; e < edges.length; e++){
+    edges[e].alpha += (edges[e].targetAlpha - edges[e].alpha) * 0.05;
   }
 
-  // Draw nodes
-  for(var i2=0;i2<nodes.length;i2++){
-    var nd = nodes[i2];
-    if(nd.alpha < 0.01) continue;
-
-    // Glow
-    ctx.beginPath();
-    ctx.arc(nd.x, nd.y, nd.r+6, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.08)+')';
-    ctx.fill();
-
-    // Circle
-    ctx.beginPath();
-    ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.15)+')';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.6)+')';
-    ctx.lineWidth = i2===0 ? 2.5 : 1.5;
-    ctx.stroke();
-
-    // Label
-    ctx.font = '700 '+(i2===0?'10':'8')+'px JetBrains Mono, monospace';
-    ctx.fillStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.9)+')';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(nd.label, nd.x, nd.y);
+  // Draw grid background
+  ctx.strokeStyle = 'rgba(30,41,59,0.25)';
+  ctx.lineWidth = 0.5;
+  var gridSize = 40;
+  for(var gx = 0; gx < W; gx += gridSize){
+    ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke();
+  }
+  for(var gy = 0; gy < H; gy += gridSize){
+    ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke();
   }
 
-  // Scanning line
-  if(phase===0){
-    var scanY = (phaseTimer/120) * H;
-    ctx.beginPath();
-    ctx.moveTo(0, scanY); ctx.lineTo(W, scanY);
-    var grad = ctx.createLinearGradient(0,scanY,W,scanY);
-    grad.addColorStop(0,'transparent');
-    grad.addColorStop(0.5,'rgba(0,212,255,0.12)');
-    grad.addColorStop(1,'transparent');
-    ctx.strokeStyle = grad; ctx.lineWidth = 1; ctx.stroke();
+  // Draw edges then nodes
+  for(var e2 = 0; e2 < edges.length; e2++){
+    drawEdge(nodes[edges[e2].from], nodes[edges[e2].to], edges[e2]);
+  }
+  for(var i2 = 0; i2 < nodes.length; i2++){
+    drawNode(nodes[i2]);
+  }
+
+  // Scanning line during grow
+  if(stage === 'grow'){
+    var scanProgress = stageTimer / STAGE_DELAY;
+    var scanY = scanProgress * H;
+    var grad = ctx.createLinearGradient(0, scanY, W, scanY);
+    grad.addColorStop(0, 'transparent');
+    grad.addColorStop(0.3, rgba(C.accent, 0.06));
+    grad.addColorStop(0.7, rgba(C.accent, 0.06));
+    grad.addColorStop(1, 'transparent');
+    ctx.strokeStyle = grad; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, scanY); ctx.lineTo(W, scanY); ctx.stroke();
+  }
+
+  // Status text top-left
+  var sc = scenarios[scenarioIdx % scenarios.length];
+  ctx.font = '600 9px JetBrains Mono, monospace';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  var statusAlpha = nodes[0] ? nodes[0].alpha * 0.6 : 0;
+  ctx.fillStyle = rgba(C.accent, statusAlpha);
+  ctx.fillText('TRACE: ' + sc.seed.label, 14, 12);
+
+  ctx.fillStyle = rgba(C.muted, statusAlpha * 0.7);
+  ctx.fillText('Nodes: ' + nodes.length + '  Edges: ' + edges.length, 14, 26);
+
+  if(stage === 'grow' && stepIdx >= 0){
+    ctx.fillStyle = rgba(C.success, statusAlpha);
+    ctx.fillText('● SCANNING — Hop ' + (stepIdx + 1), 14, 40);
+  } else if(stage === 'hold'){
+    ctx.fillStyle = rgba(C.danger, statusAlpha);
+    var flaggedCount = edges.filter(function(e){return e.flagged}).length;
+    ctx.fillText('⚠ ' + flaggedCount + ' suspicious connections detected', 14, 40);
   }
 }
 
-spawnNetwork();
+initScenario();
 animate();
 })();
 
