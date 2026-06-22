@@ -20,51 +20,6 @@ html{scroll-behavior:smooth;font-size:16px}
 body{background:var(--bg);color:var(--text);font-family:var(--font);
 line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 a{color:var(--accent);text-decoration:none}
-::selection{background:var(--accent);color:var(--bg)}
-
-/* ── GRAIN OVERLAY ── */
-.grain{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.3;
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.18'/%3E%3C/svg%3E");
-mix-blend-mode:overlay}
-.page{position:relative;z-index:1}
-
-/* ── METRICS STRIP ── */
-.metrics-strip{border-top:1px solid var(--border);border-bottom:1px solid var(--border);
-max-width:1200px;margin:0 auto}
-.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr)}
-.metric-item{padding:40px 0;text-align:center;border-right:1px solid var(--border)}
-.metric-item:last-child{border-right:none}
-.metric-num{font-size:clamp(2rem,4vw,2.8rem);font-weight:900;letter-spacing:-0.06em;line-height:1;
-font-family:var(--mono);
-background:linear-gradient(180deg,var(--text) 40%,var(--muted) 100%);
--webkit-background-clip:text;background-clip:text;color:transparent}
-.metric-label{margin-top:8px;font-size:.78rem;color:var(--muted);
-font-weight:600;text-transform:uppercase;letter-spacing:0.08em}
-@media(max-width:768px){
-.metrics-grid{grid-template-columns:repeat(2,1fr)}
-.metric-item:nth-child(2){border-right:none}
-}
-@media(max-width:480px){
-.metric-item{padding:28px 0}
-.metric-num{font-size:1.6rem}
-}
-
-/* ── HERO NETWORK VIZ ── */
-.hero-row{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
-max-width:1200px;margin:0 auto;padding:0 24px}
-.hero-viz{position:relative;height:420px;border-radius:16px;
-border:1px solid var(--border);background:rgba(17,24,39,.6);
-overflow:hidden;box-shadow:0 24px 80px -12px rgba(0,0,0,.5),0 0 60px -20px var(--accentGlow)}
-.hero-viz-header{display:flex;align-items:center;gap:8px;padding:14px 18px;
-background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
-.hero-viz-dot{width:10px;height:10px;border-radius:50%}
-.hero-viz-dot.r{background:#ff5f57}.hero-viz-dot.y{background:#febc2e}.hero-viz-dot.g{background:#28c840}
-.hero-viz-title{flex:1;text-align:center;font-family:var(--mono);font-size:.72rem;color:var(--muted);margin-right:30px}
-.hero-viz canvas{display:block;width:100%;height:calc(100% - 44px)}
-@media(max-width:1024px){
-.hero-row{grid-template-columns:1fr;gap:40px}
-.hero-viz{height:340px}
-}
 
 /* ── SCENARIOS ── */
 .scenarios-section{padding:100px 24px;max-width:1400px;margin:0 auto}
@@ -187,9 +142,8 @@ border:2px solid;z-index:2}
 
 
 .nav{position:fixed;top:0;left:0;width:100%;z-index:1000;
-background:rgba(10,14,23,.55);backdrop-filter:blur(28px) saturate(1.5);
--webkit-backdrop-filter:blur(28px) saturate(1.5);
-border-bottom:1px solid rgba(30,41,59,.6);transition:background .3s}
+background:rgba(10,14,23,.85);backdrop-filter:blur(16px);
+border-bottom:1px solid var(--border);transition:background .3s}
 .nav-inner{max-width:1200px;margin:0 auto;display:flex;
 align-items:center;justify-content:space-between;padding:0 24px;height:64px}
 .nav-logo{font-weight:700;font-size:1.25rem;letter-spacing:0;
@@ -251,41 +205,28 @@ animation:heroDrift 35s ease-in-out infinite alternate}
 66%{transform:translate(-1%,2%) scale(1.01)}
 100%{transform:translate(1%,-2%) scale(1.04)}
 }
-.hero::after{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);
-width:900px;height:900px;background:radial-gradient(circle,var(--accentGlow) 0%,transparent 60%);pointer-events:none}
 .hero-overlay{position:absolute;top:0;left:0;width:100%;height:100%;
 background:linear-gradient(180deg,rgba(10,14,23,.5) 0%,rgba(10,14,23,.88) 100%)}
-.hero-content{position:relative;z-index:2;text-align:left;padding:0;max-width:540px}
-.hero h1{font-size:clamp(2.8rem,6vw,5rem);font-weight:900;
-line-height:0.95;margin-bottom:24px;letter-spacing:-0.05em}
-.hero h1 em{font-style:normal;
-background:linear-gradient(135deg,var(--accent) 20%,#ffffff 80%);
--webkit-background-clip:text;background-clip:text;color:transparent;
-text-shadow:none}
-.hero-brand{font-family:var(--mono);font-size:.78rem;font-weight:600;
-letter-spacing:0.14em;color:var(--accent);margin-bottom:28px;
-text-transform:uppercase;
-display:inline-flex;align-items:center;gap:10px;
-padding:8px 16px;border:1px solid rgba(0,212,255,.2);
-border-radius:999px;background:rgba(0,212,255,.06)}
-.hero-brand .pulse-dot{width:7px;height:7px;border-radius:50%;
-background:var(--accent);box-shadow:0 0 12px var(--accent);
-animation:pulseDot 2s ease-in-out infinite}
-@keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-content{position:relative;z-index:2;text-align:center;padding:0 24px;max-width:800px}
+.hero h1{font-size:clamp(2.2rem,5.5vw,4rem);font-weight:700;
+line-height:1.1;margin-bottom:20px;letter-spacing:-1px}
+.hero h1 em{font-style:normal;color:var(--accent);
+text-shadow:0 0 40px rgba(0,212,255,.35)}
+.hero-brand{font-family:var(--mono);font-size:clamp(.9rem,2vw,1.1rem);
+letter-spacing:3px;color:var(--muted);margin-bottom:24px;font-weight:300}
 .hero-brand b{color:var(--accent);font-weight:700}
-.hero p{font-size:clamp(1rem,2vw,1.15rem);color:var(--muted);
-max-width:480px;margin:0 0 36px;line-height:1.7}
-.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
-.btn{display:inline-block;padding:14px 36px;border-radius:999px;
-font-weight:700;font-size:.95rem;cursor:pointer;transition:all .25s;border:none;
+.hero p{font-size:clamp(1rem,2vw,1.25rem);color:var(--muted);
+max-width:600px;margin:0 auto 36px}
+.btn{display:inline-block;padding:14px 36px;border-radius:6px;
+font-weight:600;font-size:.95rem;cursor:pointer;transition:all .25s;border:none;
 letter-spacing:.5px}
 .btn-primary{background:var(--accent);color:var(--bg);
-box-shadow:0 0 32px rgba(0,212,255,.3)}
-.btn-primary:hover{background:#33DFFF;box-shadow:0 0 50px rgba(0,212,255,.5);
+box-shadow:0 0 24px rgba(0,212,255,.3)}
+.btn-primary:hover{background:#33DFFF;box-shadow:0 0 40px rgba(0,212,255,.5);
 transform:translateY(-2px)}
 .btn-outline{background:transparent;color:var(--accent);
-border:1.5px solid rgba(0,212,255,.4);border-radius:999px}
-.btn-outline:hover{background:rgba(0,212,255,.1);border-color:var(--accent)}
+border:1.5px solid var(--accent)}
+.btn-outline:hover{background:rgba(0,212,255,.1)}
 .scroll-indicator{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
 z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;
 color:var(--muted);font-size:.75rem;letter-spacing:1px;animation:floatY 2s ease-in-out infinite}
@@ -296,10 +237,10 @@ border-bottom:2px solid var(--muted);transform:rotate(45deg)}
 /* ── SECTIONS ── */
 section{padding:100px 24px}
 .container{max-width:1200px;margin:0 auto}
-.section-label{font-family:var(--mono);font-size:.75rem;color:var(--accent);
-letter-spacing:0.14em;text-transform:uppercase;margin-bottom:14px;font-weight:600}
-.section-title{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:800;
-margin-bottom:16px;letter-spacing:-0.04em;line-height:1.05}
+.section-label{font-family:var(--mono);font-size:.8rem;color:var(--accent);
+letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;
+margin-bottom:16px;letter-spacing:-.5px}
 .section-sub{color:var(--muted);font-size:1.05rem;max-width:640px;margin:0 auto 56px;text-align:center}
 
 /* ── CAPABILITIES GRID ── */
@@ -447,29 +388,24 @@ border-radius:var(--radius);transition:all .3s}
 .cert-badge p{font-size:.72rem;color:var(--muted)}
 
 /* ── CONTACT FORM ── */
-.contact-section{padding:80px 24px;position:relative;overflow:hidden}
-.contact-section::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);
-width:800px;height:800px;background:radial-gradient(circle,rgba(0,212,255,.08) 0%,transparent 60%);pointer-events:none}
-.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1000px;margin:0 auto;
-position:relative;z-index:1;padding:56px 48px;border-radius:20px;
-border:1px solid var(--border);background:rgba(17,24,39,.4);
-box-shadow:0 0 80px -20px rgba(0,212,255,.08)}
-.contact-info h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;margin-bottom:12px;letter-spacing:-0.04em}
-.contact-info p{color:var(--muted);margin-bottom:24px;font-size:1.05rem;line-height:1.7}
+.contact-section{padding:80px 24px;
+background:linear-gradient(180deg,var(--bg) 0%,rgba(0,212,255,.04) 100%)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1000px;margin:0 auto}
+.contact-info h2{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;margin-bottom:12px}
+.contact-info p{color:var(--muted);margin-bottom:24px;font-size:1.05rem}
 .contact-info .ci-item{display:flex;align-items:center;gap:10px;margin-bottom:14px;
 color:var(--muted);font-size:.9rem}
 .contact-info .ci-item .ci-icon{color:var(--accent);font-size:1.1rem}
 .contact-form{display:flex;flex-direction:column;gap:16px}
-.contact-form input,.contact-form textarea{background:rgba(17,24,39,.8);
-border:1px solid var(--border);border-radius:10px;padding:14px 16px;
+.contact-form input,.contact-form textarea{background:var(--surface);
+border:1px solid var(--border);border-radius:6px;padding:14px 16px;
 color:var(--text);font-family:var(--font);font-size:.9rem;transition:border-color .2s;outline:none}
-.contact-form input:focus,.contact-form textarea:focus{border-color:var(--accent);
-box-shadow:0 0 20px rgba(0,212,255,.08)}
+.contact-form input:focus,.contact-form textarea:focus{border-color:var(--accent)}
 .contact-form input::placeholder,.contact-form textarea::placeholder{color:var(--muted);opacity:.6}
 .contact-form textarea{resize:vertical;min-height:100px}
-.contact-form .btn{width:100%;text-align:center;border-radius:10px}
+.contact-form .btn{width:100%;text-align:center}
 .form-note{font-size:.75rem;color:var(--muted);text-align:center;margin-top:4px}
-@media(max-width:768px){.contact-grid{grid-template-columns:1fr;gap:32px;padding:32px 24px}}
+@media(max-width:768px){.contact-grid{grid-template-columns:1fr;gap:32px}}
 
 /* ── FOOTER ── */
 .footer-bottom{text-align:center;padding:24px;border-top:1px solid var(--border);
@@ -616,8 +552,8 @@ section{padding:60px 16px}
 .pipe-arrow{display:none !important}
 .sector-tabs{gap:6px}
 .sector-tab{padding:8px 14px;font-size:.8rem}
-.hero h1{font-size:clamp(2rem,7vw,3rem)}
-.hero-brand{letter-spacing:2px;font-size:.72rem;padding:6px 12px}
+.hero h1{font-size:clamp(1.8rem,6vw,2.5rem)}
+.hero-brand{letter-spacing:2px;font-size:.8rem}
 .section-title{font-size:clamp(1.4rem,4vw,2rem)}
 .tech-highlights{grid-template-columns:1fr}
 }
@@ -629,9 +565,6 @@ section{padding:60px 16px}
 </style>
 </head>
 <body>
-
-<div class="grain"></div>
-<div class="page">
 
 <nav class="nav" id="nav">
 <div class="nav-inner">
@@ -669,54 +602,17 @@ section{padding:60px 16px}
 <section class="hero" id="hero">
 <div class="hero-bg" id="heroBg"></div>
 <div class="hero-overlay"></div>
-<div class="hero-row">
 <div class="hero-content">
-<div class="hero-brand"><span class="pulse-dot"></span> <span data-i18n="hero_brand">Financial Crime Intelligence Platform</span></div>
+<div class="hero-brand" data-i18n="hero_brand">Financial Crime Intelligence Platform</div>
 <h1 data-i18n="hero_title">Financial Crime<br><em>Stops Here.</em></h1>
 <p data-i18n="hero_sub">AI-powered intelligence platform that detects money laundering, fraud networks, and financial crime in real time. Deployed on your infrastructure. Under your control.</p>
-<div class="hero-actions">
 <a href="#contact" class="btn btn-primary" data-i18n="hero_cta">Request a Demo</a>
-<a href="#network-trace" class="btn btn-outline">See it in action</a>
-</div>
-</div>
-
-<div class="hero-viz">
-<div class="hero-viz-header">
-<span class="hero-viz-dot r"></span>
-<span class="hero-viz-dot y"></span>
-<span class="hero-viz-dot g"></span>
-<span class="hero-viz-title">Network Trace — Live Analysis</span>
-</div>
-<canvas id="heroCanvas"></canvas>
-</div>
 </div>
 <div class="scroll-indicator" onclick="document.getElementById('network-trace').scrollIntoView({behavior:'smooth'})" style="cursor:pointer">
 <span>SCROLL</span>
 <div class="arrow"></div>
 </div>
 </section>
-
-<!-- Metrics Strip -->
-<div class="metrics-strip">
-<div class="metrics-grid">
-<div class="metric-item">
-<div class="metric-num">&lt;50ms</div>
-<div class="metric-label" data-i18n="m1">API Latency</div>
-</div>
-<div class="metric-item">
-<div class="metric-num">100M+</div>
-<div class="metric-label" data-i18n="m2">Transactions / Day</div>
-</div>
-<div class="metric-item">
-<div class="metric-num">23+</div>
-<div class="metric-label" data-i18n="m3">Detection Patterns</div>
-</div>
-<div class="metric-item">
-<div class="metric-num">99.95%</div>
-<div class="metric-label" data-i18n="m4">Uptime SLA</div>
-</div>
-</div>
-</div>
 
 <div class="section-divider"></div>
 <section id="network-trace" class="trace-section">
@@ -2053,9 +1949,7 @@ section{padding:60px 16px}
 <span style="font-family:var(--mono);font-size:.7rem;color:var(--border)">Financial Crime Intelligence Platform</span>
 </div>
 </div>
-<div style="text-align:center;padding:8px;font-family:var(--mono);font-size:.6rem;color:var(--border);opacity:.4">v1.4.0</div>
-
-</div><!-- /page -->
+<div style="text-align:center;padding:8px;font-family:var(--mono);font-size:.6rem;color:var(--border);opacity:.4">v1.3.0 · f2ff664</div>
 
 <script>
 (function(){
@@ -2194,8 +2088,7 @@ nav_capabilities:"Yetenekler",nav_detection:"Tespit",nav_solutions:"Çözümler"
 nav_scenarios:"Senaryolar",
 scenarios_title:"Layer.ONE İş Başında",
 scenarios_subtitle:"Gerçek dünya senaryolarıyla Layer.ONE'ın ham veriyi eyleme dönüştürülebilir istihbarata nasıl dönüştürdüğünü görün — ilk uyarıdan dava çözümüne.",
-nav_why:"Neden Layer.ONE",nav_architecture:"Mimari",nav_demo:"Demo Talep Et",
-m1:"API Gecikme",m2:"İşlem / Gün",m3:"Tespit Paterni",m4:"Çalışma Süresi",
+nav_why:"Neden Layer.ONE",nav_architecture:"Mimari",nav_scenarios:"Senaryolar",nav_demo:"Demo Talep Et",
 hero_brand:"Finansal Suç İstihbarat Platformu",
 hero_title:'Finansal Suç<br><em>Burada Biter.</em>',
 hero_sub:"Kara para aklama, dolandırıcılık ağları ve finansal suçları gerçek zamanlı tespit eden yapay zekâ destekli istihbarat platformu. Altyapınızda çalışır. Kontrolünüz altında.",
@@ -2876,183 +2769,6 @@ if ('IntersectionObserver' in window) {
 } else {
   sched(runCycle, 1000);
 }
-})();
-
-/* ── HERO NETWORK CANVAS ANIMATION ── */
-(function(){
-var canvas = document.getElementById('heroCanvas');
-if (!canvas) return;
-var ctx = canvas.getContext('2d');
-var dpr = window.devicePixelRatio || 1;
-var W, H;
-
-function resize(){
-  var rect = canvas.parentElement.getBoundingClientRect();
-  W = rect.width; H = rect.height - 44;
-  canvas.width = W * dpr; canvas.height = H * dpr;
-  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-resize();
-window.addEventListener('resize', resize);
-
-var nodes = [];
-var edges = [];
-var accent = [0, 212, 255];
-var danger = [239, 68, 68];
-var success = [16, 185, 129];
-var warning = [245, 158, 11];
-
-var types = [
-  {label:'ACC',color:accent,r:14},
-  {label:'LLC',color:warning,r:16},
-  {label:'PEP',color:danger,r:15},
-  {label:'BNK',color:accent,r:13},
-  {label:'DEV',color:success,r:11},
-];
-
-function rnd(a,b){return a+Math.random()*(b-a)}
-
-function spawnNetwork(){
-  nodes = []; edges = [];
-  var cx = W/2, cy = H/2;
-  // Central node
-  var center = {x:cx, y:cy, vx:0, vy:0, r:22, label:'SEED', color:danger, alpha:0, targetAlpha:1};
-  nodes.push(center);
-
-  var ring1 = 5 + Math.floor(Math.random()*3);
-  for(var i=0;i<ring1;i++){
-    var a = (Math.PI*2/ring1)*i + rnd(-0.2,0.2);
-    var d = rnd(80,130);
-    var t = types[Math.floor(Math.random()*types.length)];
-    var n = {x:cx+Math.cos(a)*d, y:cy+Math.sin(a)*d, vx:rnd(-0.15,0.15), vy:rnd(-0.15,0.15),
-      r:t.r, label:t.label, color:t.color, alpha:0, targetAlpha:1};
-    nodes.push(n);
-    edges.push({a:0,b:nodes.length-1, alpha:0, targetAlpha:0.5,
-      flagged: Math.random()>0.6, amount: Math.floor(rnd(10,800))+'K'});
-  }
-
-  var ring2 = 4 + Math.floor(Math.random()*4);
-  for(var j=0;j<ring2;j++){
-    var parent = 1 + Math.floor(Math.random()*ring1);
-    var a2 = Math.atan2(nodes[parent].y-cy, nodes[parent].x-cx) + rnd(-0.6,0.6);
-    var d2 = rnd(140,200);
-    var t2 = types[Math.floor(Math.random()*types.length)];
-    var n2 = {x:cx+Math.cos(a2)*d2, y:cy+Math.sin(a2)*d2, vx:rnd(-0.1,0.1), vy:rnd(-0.1,0.1),
-      r:t2.r, label:t2.label, color:t2.color, alpha:0, targetAlpha:0.7};
-    nodes.push(n2);
-    edges.push({a:parent,b:nodes.length-1, alpha:0, targetAlpha:0.3,
-      flagged: Math.random()>0.7, amount: Math.floor(rnd(5,200))+'K'});
-  }
-  // Some cross-edges
-  for(var k=0;k<3;k++){
-    var ea = 1+Math.floor(Math.random()*(nodes.length-1));
-    var eb = 1+Math.floor(Math.random()*(nodes.length-1));
-    if(ea!==eb) edges.push({a:ea,b:eb,alpha:0,targetAlpha:0.2,flagged:Math.random()>0.5,amount:''});
-  }
-}
-
-var tick = 0;
-var phase = 0; // 0=building, 1=idle, 2=fade out
-var phaseTimer = 0;
-
-function animate(){
-  requestAnimationFrame(animate);
-  ctx.clearRect(0,0,W,H);
-  tick++;
-
-  // Phase management
-  phaseTimer++;
-  if(phase===0 && phaseTimer>120){phase=1;phaseTimer=0;}
-  if(phase===1 && phaseTimer>200){phase=2;phaseTimer=0;}
-  if(phase===2 && phaseTimer>60){phase=0;phaseTimer=0;spawnNetwork();}
-
-  // Update alphas
-  for(var i=0;i<nodes.length;i++){
-    var n = nodes[i];
-    var ta = phase===2 ? 0 : n.targetAlpha;
-    n.alpha += (ta - n.alpha) * 0.04;
-    n.x += n.vx; n.y += n.vy;
-    // Soft bounds
-    if(n.x < 30 || n.x > W-30) n.vx *= -1;
-    if(n.y < 30 || n.y > H-30) n.vy *= -1;
-  }
-
-  // Draw edges
-  for(var e=0;e<edges.length;e++){
-    var edge = edges[e];
-    var ta2 = phase===2 ? 0 : edge.targetAlpha;
-    edge.alpha += (ta2 - edge.alpha) * 0.03;
-    var na = nodes[edge.a], nb = nodes[edge.b];
-    var ea = Math.min(na.alpha, nb.alpha, edge.alpha);
-    if(ea < 0.01) continue;
-
-    ctx.beginPath();
-    ctx.moveTo(na.x, na.y);
-    ctx.lineTo(nb.x, nb.y);
-
-    if(edge.flagged){
-      ctx.strokeStyle = 'rgba('+danger.join(',')+','+ea*0.7+')';
-      ctx.setLineDash([4,4]);
-    } else {
-      ctx.strokeStyle = 'rgba('+accent.join(',')+','+ea*0.5+')';
-      ctx.setLineDash([]);
-    }
-    ctx.lineWidth = edge.flagged ? 1.5 : 1;
-    ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Amount label on flagged
-    if(edge.flagged && edge.amount && ea > 0.3){
-      var mx = (na.x+nb.x)/2, my = (na.y+nb.y)/2;
-      ctx.font = '600 9px JetBrains Mono, monospace';
-      ctx.fillStyle = 'rgba('+danger.join(',')+','+ea+')';
-      ctx.fillText('$'+edge.amount, mx+4, my-4);
-    }
-  }
-
-  // Draw nodes
-  for(var i2=0;i2<nodes.length;i2++){
-    var nd = nodes[i2];
-    if(nd.alpha < 0.01) continue;
-
-    // Glow
-    ctx.beginPath();
-    ctx.arc(nd.x, nd.y, nd.r+6, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.08)+')';
-    ctx.fill();
-
-    // Circle
-    ctx.beginPath();
-    ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.15)+')';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.6)+')';
-    ctx.lineWidth = i2===0 ? 2.5 : 1.5;
-    ctx.stroke();
-
-    // Label
-    ctx.font = '700 '+(i2===0?'10':'8')+'px JetBrains Mono, monospace';
-    ctx.fillStyle = 'rgba('+nd.color.join(',')+','+(nd.alpha*0.9)+')';
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(nd.label, nd.x, nd.y);
-  }
-
-  // Scanning line
-  if(phase===0){
-    var scanY = (phaseTimer/120) * H;
-    ctx.beginPath();
-    ctx.moveTo(0, scanY); ctx.lineTo(W, scanY);
-    var grad = ctx.createLinearGradient(0,scanY,W,scanY);
-    grad.addColorStop(0,'transparent');
-    grad.addColorStop(0.5,'rgba(0,212,255,0.12)');
-    grad.addColorStop(1,'transparent');
-    ctx.strokeStyle = grad; ctx.lineWidth = 1; ctx.stroke();
-  }
-}
-
-spawnNetwork();
-animate();
 })();
 
 </script>
