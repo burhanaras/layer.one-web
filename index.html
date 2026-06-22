@@ -324,13 +324,22 @@ display:flex;align-items:center;gap:8px}
 .detect-category h3 .cat-count{font-family:var(--mono);font-size:.75rem;
 color:var(--accent);background:rgba(0,212,255,.08);padding:2px 10px;border-radius:12px}
 .detect-card{background:var(--surface);border:1px solid var(--border);
-border-radius:var(--radius);padding:18px 16px;
-transition:border-color .3s,box-shadow .3s,transform .3s;display:flex;gap:12px;align-items:flex-start}
+border-radius:var(--radius);padding:16px;cursor:pointer;position:relative;
+transition:border-color .3s,box-shadow .3s}
 .detect-card:hover{border-color:var(--accent);
-box-shadow:0 0 20px var(--accentGlow);transform:translateY(-2px)}
+box-shadow:0 0 20px var(--accentGlow)}
+.detect-card.expanded{border-color:var(--accent)}
+.detect-card .d-top{display:flex;gap:12px;align-items:flex-start}
 .detect-card .d-icon{font-size:1.2rem;flex-shrink:0;margin-top:2px}
+.detect-card .d-info{flex:1}
 .detect-card .d-info h4{font-size:.88rem;font-weight:600;margin-bottom:3px}
 .detect-card .d-info p{font-size:.85rem;color:var(--muted);line-height:1.4}
+.detect-card .d-toggle{font-size:.6rem;color:var(--muted);opacity:.4;margin-left:auto;flex-shrink:0;margin-top:4px;transition:all .2s}
+.detect-card:hover .d-toggle{opacity:.8;color:var(--accent)}
+.detect-card.expanded .d-toggle{transform:rotate(180deg);opacity:1;color:var(--accent)}
+.detect-card .d-chart{max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .25s ease;opacity:0}
+.detect-card.expanded .d-chart{max-height:180px;opacity:1;margin-top:14px}
+.detect-card .d-chart svg{width:100%;height:110px;display:block;border-radius:6px;background:rgba(10,15,30,.7);border:1px solid rgba(51,65,85,.35)}
 
 /* ── SECTORS ── */
 .sector-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
@@ -1539,40 +1548,66 @@ section{padding:60px 16px}
 <div class="container">
 <div class="section-label reveal" data-i18n="det_label">Detection Engine</div>
 <div class="section-title reveal" data-i18n="det_title">What We Detect.</div>
-<div class="section-sub reveal" data-i18n="det_sub">23+ detection patterns across financial crime and card fraud — each powered by rule engines, ML models, and graph analytics.</div>
+<div class="section-sub reveal" data-i18n="det_sub">25 detection patterns across 6 categories — each powered by rule engines, ML models, and graph analytics.</div>
 
 <div class="detect-category reveal">
-<h3><span class="cat-icon">🔍</span> <span data-i18n="det_cat1">Financial Crime Patterns</span> <span class="cat-count">16</span></h3>
+<h3><span class="cat-icon">💰</span> <span data-i18n="det_cat1">Structuring</span> <span class="cat-count">5</span></h3>
 <div class="detect-grid">
-<div class="detect-card"><div class="d-icon">💰</div><div class="d-info"><h4 data-i18n="dp1_t">Structuring / Smurfing</h4><p data-i18n="dp1_d">Splitting transactions below reporting thresholds (e.g. $9,900 each)</p></div></div>
-<div class="detect-card"><div class="d-icon">📊</div><div class="d-info"><h4 data-i18n="dp2_t">Layering</h4><p data-i18n="dp2_d">Multi-layered transfer chains to obscure fund origins</p></div></div>
-<div class="detect-card"><div class="d-icon">🔄</div><div class="d-info"><h4 data-i18n="dp3_t">Round-Tripping</h4><p data-i18n="dp3_d">Funds returning to origin through different paths</p></div></div>
-<div class="detect-card"><div class="d-icon">📤</div><div class="d-info"><h4 data-i18n="dp4_t">Fan-Out (1→N)</h4><p data-i18n="dp4_d">One account distributing to many recipients</p></div></div>
-<div class="detect-card"><div class="d-icon">📥</div><div class="d-info"><h4 data-i18n="dp5_t">Fan-In (N→1)</h4><p data-i18n="dp5_d">Many accounts collecting into a single destination</p></div></div>
-<div class="detect-card"><div class="d-icon">🔀</div><div class="d-info"><h4 data-i18n="dp6_t">Fan-In/Out Combo</h4><p data-i18n="dp6_d">Collection + distribution combination (mixer pattern)</p></div></div>
-<div class="detect-card"><div class="d-icon">🫏</div><div class="d-info"><h4 data-i18n="dp7_t">Muling</h4><p data-i18n="dp7_d">Recruited money mule accounts used as intermediaries</p></div></div>
-<div class="detect-card"><div class="d-icon">🧾</div><div class="d-info"><h4 data-i18n="dp8_t">Invoice Fraud (Naylon Fatura)</h4><p data-i18n="dp8_d">Fictitious invoices creating legitimate-looking transfers</p></div></div>
-<div class="detect-card"><div class="d-icon">🚢</div><div class="d-info"><h4 data-i18n="dp9_t">Trade-Based Laundering</h4><p data-i18n="dp9_d">Over/under invoicing, phantom shipments, and fictitious goods</p></div></div>
-<div class="detect-card"><div class="d-icon">🏢</div><div class="d-info"><h4 data-i18n="dp10_t">Shell Company Networks</h4><p data-i18n="dp10_d">Front company networks used to obscure fund flows</p></div></div>
-<div class="detect-card"><div class="d-icon">⏱️</div><div class="d-info"><h4 data-i18n="dp11_t">Funnel Accounts</h4><p data-i18n="dp11_d">Accounts opened, heavily used, and quickly abandoned</p></div></div>
-<div class="detect-card"><div class="d-icon">⚡</div><div class="d-info"><h4 data-i18n="dp12_t">Rapid Movement</h4><p data-i18n="dp12_d">Funds transferred out within minutes of deposit</p></div></div>
-<div class="detect-card"><div class="d-icon">💤</div><div class="d-info"><h4 data-i18n="dp13_t">Dormant Activation</h4><p data-i18n="dp13_d">Long-inactive accounts suddenly becoming active</p></div></div>
-<div class="detect-card"><div class="d-icon">💱</div><div class="d-info"><h4 data-i18n="dp14_t">Currency Cycling</h4><p data-i18n="dp14_d">Circular conversion between different currencies</p></div></div>
-<div class="detect-card"><div class="d-icon">₿</div><div class="d-info"><h4 data-i18n="dp15_t">Crypto Mixing</h4><p data-i18n="dp15_d">Mixer/tumbler services used for crypto laundering</p></div></div>
-<div class="detect-card"><div class="d-icon">🪆</div><div class="d-info"><h4 data-i18n="dp16_t">Nested Services</h4><p data-i18n="dp16_d">Fintech operating through another fintech (Matryoshka pattern)</p></div></div>
+<div class="detect-card" data-pattern="cash-structuring"><div class="d-top"><div class="d-icon">💰</div><div class="d-info"><h4>Cash Structuring</h4><p>Transactions deliberately kept below $10K reporting thresholds to avoid mandatory SARs</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="micro-splitting"><div class="d-top"><div class="d-icon">✂️</div><div class="d-info"><h4>Micro-Transfer Splitting</h4><p>Single large amount split into many small transfers across multiple beneficiaries</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="rapid-deposits"><div class="d-top"><div class="d-icon">⚡</div><div class="d-info"><h4>Rapid Sequential Deposits</h4><p>Multiple deposits in rapid succession from different locations or ATMs</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="cross-bank"><div class="d-top"><div class="d-icon">🏦</div><div class="d-info"><h4>Cross-Bank Structuring</h4><p>Same beneficial owner splits deposits across multiple banks to stay below thresholds</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="funnel"><div class="d-top"><div class="d-icon">⏱️</div><div class="d-info"><h4>Funnel Account Detection</h4><p>Many sources funneling into a single account that rapidly moves funds out</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
 </div>
 </div>
 
 <div class="detect-category reveal">
-<h3><span class="cat-icon">💳</span> <span data-i18n="det_cat2">Card Fraud Patterns</span> <span class="cat-count">7</span></h3>
+<h3><span class="cat-icon">🔀</span> <span data-i18n="det_cat2">Layering</span> <span class="cat-count">5</span></h3>
 <div class="detect-grid">
-<div class="detect-card"><div class="d-icon">🏪</div><div class="d-info"><h4 data-i18n="cf1_t">MCC Analysis</h4><p data-i18n="cf1_d">Merchant Category Code anomalies and high-risk MCC monitoring</p></div></div>
-<div class="detect-card"><div class="d-icon">↩️</div><div class="d-info"><h4 data-i18n="cf2_t">Chargeback Fraud</h4><p data-i18n="cf2_d">Systematic chargeback abuse and friendly fraud patterns</p></div></div>
-<div class="detect-card"><div class="d-icon">🌐</div><div class="d-info"><h4 data-i18n="cf3_t">CNP Fraud</h4><p data-i18n="cf3_d">Card-not-present transaction fraud and velocity anomalies</p></div></div>
-<div class="detect-card"><div class="d-icon">📋</div><div class="d-info"><h4 data-i18n="cf4_t">Card Cloning</h4><p data-i18n="cf4_d">Duplicate card usage detection across locations and devices</p></div></div>
-<div class="detect-card"><div class="d-icon">⚠️</div><div class="d-info"><h4 data-i18n="cf5_t">Merchant Risk</h4><p data-i18n="cf5_d">High-risk merchant scoring and transaction laundering detection</p></div></div>
-<div class="detect-card"><div class="d-icon">🔓</div><div class="d-info"><h4 data-i18n="cf6_t">3D Secure Bypass</h4><p data-i18n="cf6_d">Attempts to circumvent 3DS authentication protocols</p></div></div>
-<div class="detect-card"><div class="d-icon">🔢</div><div class="d-info"><h4 data-i18n="cf7_t">BIN Analysis</h4><p data-i18n="cf7_d">Bank Identification Number pattern analysis and anomaly detection</p></div></div>
+<div class="detect-card" data-pattern="multi-hop"><div class="d-top"><div class="d-icon">🌍</div><div class="d-info"><h4>Multi-Hop Jurisdiction Chain</h4><p>Money passes through 3+ countries with no clear business justification</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="shell-co"><div class="d-top"><div class="d-icon">🏢</div><div class="d-info"><h4>Shell Company Pass-Through</h4><p>Zero-employee entities used as intermediaries to obscure fund origins</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="round-trip"><div class="d-top"><div class="d-icon">🔄</div><div class="d-info"><h4>Round-Tripping</h4><p>Funds returning to origin through different paths via intermediaries</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="mirror"><div class="d-top"><div class="d-icon">🪞</div><div class="d-info"><h4>Mirror Trading</h4><p>Matched buy/sell orders in different jurisdictions to move money across borders</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="trade-laundering"><div class="d-top"><div class="d-icon">🚢</div><div class="d-info"><h4>Trade-Based Laundering</h4><p>Over/under invoicing, phantom shipments, and fictitious goods</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+</div>
+</div>
+
+<div class="detect-category reveal">
+<h3><span class="cat-icon">👔</span> <span data-i18n="det_cat3">PEP Risk</span> <span class="cat-count">4</span></h3>
+<div class="detect-grid">
+<div class="detect-card" data-pattern="pep-wealth"><div class="d-top"><div class="d-icon">💎</div><div class="d-info"><h4>PEP Wealth Inconsistency</h4><p>Financial activity disproportionate to declared income for Politically Exposed Persons</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="pep-family"><div class="d-top"><div class="d-icon">👨‍👩‍👦</div><div class="d-info"><h4>PEP Family Network</h4><p>Financial activity through PEP's family members or close associates</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="pep-geo"><div class="d-top"><div class="d-icon">🗺️</div><div class="d-info"><h4>PEP Geographic Exposure</h4><p>PEP linked to financial activity in high-risk jurisdictions beyond home country</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="pep-beneficial"><div class="d-top"><div class="d-icon">🕵️</div><div class="d-info"><h4>PEP Beneficial Ownership</h4><p>Traversing corporate ownership chains to uncover PEP ultimate beneficial owners</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+</div>
+</div>
+
+<div class="detect-category reveal">
+<h3><span class="cat-icon">🚫</span> <span data-i18n="det_cat4">Sanctions</span> <span class="cat-count">3</span></h3>
+<div class="detect-grid">
+<div class="detect-card" data-pattern="sanctions-match"><div class="d-top"><div class="d-icon">🎯</div><div class="d-info"><h4>Sanctions List Match</h4><p>Real-time screening against OFAC SDN, EU, UN, and HMT consolidated lists</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="sanctions-near"><div class="d-top"><div class="d-icon">🔍</div><div class="d-info"><h4>Sanctions Near-Match</h4><p>Fuzzy matching on aliases, transliterations, and phonetic variations</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="sanctions-proximity"><div class="d-top"><div class="d-icon">🕸️</div><div class="d-info"><h4>Sanctions Network Proximity</h4><p>Entities within N hops of a sanctioned entity in the transaction graph</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+</div>
+</div>
+
+<div class="detect-category reveal">
+<h3><span class="cat-icon">📈</span> <span data-i18n="det_cat5">Behavioral Anomaly</span> <span class="cat-count">5</span></h3>
+<div class="detect-grid">
+<div class="detect-card" data-pattern="volume-spike"><div class="d-top"><div class="d-icon">📊</div><div class="d-info"><h4>Volume Spike</h4><p>Transaction volume exceeding 3σ above entity's rolling 90-day baseline</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="velocity"><div class="d-top"><div class="d-icon">⚡</div><div class="d-info"><h4>Velocity Anomaly</h4><p>Transaction frequency exceeding 95th percentile of historical distribution</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="geo-anomaly"><div class="d-top"><div class="d-icon">📍</div><div class="d-info"><h4>Geographic Anomaly</h4><p>Transactions from countries with no prior business relationship or presence</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="temporal"><div class="d-top"><div class="d-icon">🕐</div><div class="d-info"><h4>Temporal Anomaly</h4><p>Activity outside entity's established time-of-day or day-of-week patterns</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="dormant"><div class="d-top"><div class="d-icon">💤</div><div class="d-info"><h4>Dormant Account Activation</h4><p>Long-inactive accounts suddenly becoming active with significant volume</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+</div>
+</div>
+
+<div class="detect-category reveal">
+<h3><span class="cat-icon">🕸️</span> <span data-i18n="det_cat6">Network Anomaly</span> <span class="cat-count">3</span></h3>
+<div class="detect-grid">
+<div class="detect-card" data-pattern="new-highrisk"><div class="d-top"><div class="d-icon">🔗</div><div class="d-info"><h4>New High-Risk Connection</h4><p>Entity forming new relationships with known high-risk or flagged counterparties</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="community-change"><div class="d-top"><div class="d-icon">🔄</div><div class="d-info"><h4>Community Structure Change</h4><p>Subgraph clustering shifts indicating new money flow corridors</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
+<div class="detect-card" data-pattern="hidden-controller"><div class="d-top"><div class="d-icon">👁️</div><div class="d-info"><h4>Hidden Common Controller</h4><p>Multiple seemingly unrelated entities sharing the same beneficial controller</p></div><div class="d-toggle">▼</div></div><div class="d-chart"><svg viewBox="0 0 240 110"></svg></div></div>
 </div>
 </div>
 </div>
@@ -3256,6 +3291,183 @@ function animate(){
 
 initScenario();
 animate();
+})();
+
+/* ── DETECTION PATTERN MINI CHARTS ── */
+(function(){
+  /* Mini SVG chart data for each pattern */
+  var charts={
+    /* ── Structuring ── */
+    'cash-structuring':{
+      nodes:[{x:30,y:55,r:10,c:'#a78bfa',l:'Source'},{x:120,y:20,r:7,c:'#94a3b8',l:'$9.5K'},{x:120,y:40,r:7,c:'#94a3b8',l:'$9.8K'},{x:120,y:60,r:7,c:'#94a3b8',l:'$9.2K'},{x:120,y:80,r:7,c:'#94a3b8',l:'$9.9K'},{x:120,y:100,r:7,c:'#94a3b8',l:'$8.7K'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1},{s:0,t:3,f:1},{s:0,t:4,f:1},{s:0,t:5,f:1}],
+      label:'All below $10K threshold'
+    },
+    'micro-splitting':{
+      nodes:[{x:30,y:55,r:10,c:'#f59e0b',l:'Corp'},{x:110,y:18,r:6,c:'#94a3b8',l:'$4.2K'},{x:110,y:38,r:6,c:'#94a3b8',l:'$3.8K'},{x:110,y:58,r:6,c:'#94a3b8',l:'$5K'},{x:110,y:78,r:6,c:'#94a3b8',l:'$2.5K'},{x:110,y:98,r:6,c:'#94a3b8',l:'$3.1K'},{x:200,y:55,r:8,c:'#ef4444',l:'$85K'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1},{s:0,t:3,f:1},{s:0,t:4,f:1},{s:0,t:5,f:1},{s:1,t:6,f:0},{s:2,t:6,f:0},{s:3,t:6,f:0},{s:4,t:6,f:0},{s:5,t:6,f:0}],
+      label:'Split → recombine'
+    },
+    'rapid-deposits':{
+      nodes:[{x:30,y:55,r:10,c:'#a78bfa',l:'Person'},{x:130,y:18,r:7,c:'#00d4ff',l:'ATM 1'},{x:130,y:40,r:7,c:'#00d4ff',l:'ATM 2'},{x:130,y:62,r:7,c:'#00d4ff',l:'ATM 3'},{x:130,y:84,r:7,c:'#00d4ff',l:'ATM 4'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1},{s:0,t:3,f:1},{s:0,t:4,f:1}],
+      label:'Same day, multiple locations'
+    },
+    'cross-bank':{
+      nodes:[{x:30,y:55,r:10,c:'#a78bfa',l:'Owner'},{x:130,y:20,r:8,c:'#00d4ff',l:'Bank A'},{x:130,y:48,r:8,c:'#00d4ff',l:'Bank B'},{x:130,y:76,r:8,c:'#00d4ff',l:'Bank C'},{x:130,y:100,r:8,c:'#00d4ff',l:'Bank D'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1},{s:0,t:3,f:1},{s:0,t:4,f:1}],
+      label:'Each bank sees sub-threshold'
+    },
+    'funnel':{
+      nodes:[{x:25,y:15,r:6,c:'#94a3b8',l:'A'},{x:25,y:35,r:6,c:'#94a3b8',l:'B'},{x:25,y:55,r:6,c:'#94a3b8',l:'C'},{x:25,y:75,r:6,c:'#94a3b8',l:'D'},{x:25,y:95,r:6,c:'#94a3b8',l:'E'},{x:120,y:55,r:12,c:'#ef4444',l:'Funnel'},{x:210,y:55,r:8,c:'#f59e0b',l:'Exit'}],
+      edges:[{s:0,t:5,f:0},{s:1,t:5,f:0},{s:2,t:5,f:0},{s:3,t:5,f:0},{s:4,t:5,f:0},{s:5,t:6,f:1}],
+      label:'N→1→1 rapid outflow'
+    },
+    /* ── Layering ── */
+    'multi-hop':{
+      nodes:[{x:20,y:55,r:8,c:'#00d4ff',l:'Origin'},{x:75,y:30,r:7,c:'#f59e0b',l:'Cyprus'},{x:130,y:70,r:7,c:'#f59e0b',l:'BVI'},{x:185,y:35,r:7,c:'#f59e0b',l:'Dubai'},{x:220,y:70,r:8,c:'#ef4444',l:'End'}],
+      edges:[{s:0,t:1,f:1},{s:1,t:2,f:1},{s:2,t:3,f:1},{s:3,t:4,f:1}],
+      label:'3+ jurisdictions, no business nexus'
+    },
+    'shell-co':{
+      nodes:[{x:20,y:55,r:8,c:'#a78bfa',l:'Source'},{x:80,y:35,r:7,c:'#f59e0b',l:'Shell A'},{x:140,y:75,r:7,c:'#f59e0b',l:'Shell B'},{x:200,y:45,r:8,c:'#10b981',l:'Clean'}],
+      edges:[{s:0,t:1,f:1},{s:1,t:2,f:1},{s:2,t:3,f:1}],
+      label:'Zero employees, zero revenue'
+    },
+    'round-trip':{
+      nodes:[{x:40,y:55,r:10,c:'#ef4444',l:'Entity A'},{x:120,y:25,r:7,c:'#f59e0b',l:'Intm 1'},{x:200,y:55,r:7,c:'#f59e0b',l:'Intm 2'},{x:120,y:90,r:7,c:'#f59e0b',l:'Intm 3'}],
+      edges:[{s:0,t:1,f:1},{s:1,t:2,f:0},{s:2,t:3,f:0},{s:3,t:0,f:1}],
+      label:'Circular flow back to origin'
+    },
+    'mirror':{
+      nodes:[{x:30,y:30,r:8,c:'#00d4ff',l:'Buy US'},{x:30,y:80,r:8,c:'#a78bfa',l:'Sell UK'},{x:120,y:55,r:10,c:'#f59e0b',l:'Same Asset'},{x:210,y:30,r:7,c:'#10b981',l:'$$ In'},{x:210,y:80,r:7,c:'#ef4444',l:'$$ Out'}],
+      edges:[{s:0,t:2,f:0},{s:1,t:2,f:0},{s:2,t:3,f:0},{s:2,t:4,f:1}],
+      label:'Matched orders, different jurisdictions'
+    },
+    'trade-laundering':{
+      nodes:[{x:20,y:55,r:8,c:'#a78bfa',l:'Exporter'},{x:110,y:30,r:8,c:'#f59e0b',l:'$500K invoice'},{x:110,y:80,r:8,c:'#ef4444',l:'$50K goods'},{x:200,y:55,r:8,c:'#a78bfa',l:'Importer'}],
+      edges:[{s:0,t:1,f:1},{s:1,t:3,f:0},{s:0,t:2,f:0},{s:2,t:3,f:0}],
+      label:'10× over-invoicing'
+    },
+    /* ── PEP Risk ── */
+    'pep-wealth':{
+      nodes:[{x:40,y:55,r:12,c:'#ef4444',l:'PEP'},{x:140,y:25,r:7,c:'#10b981',l:'$40K salary'},{x:140,y:55,r:8,c:'#ef4444',l:'$2.8M flow'},{x:140,y:85,r:7,c:'#f59e0b',l:'Villa'}],
+      edges:[{s:0,t:1,f:0},{s:0,t:2,f:1},{s:0,t:3,f:1}],
+      label:'70× declared income'
+    },
+    'pep-family':{
+      nodes:[{x:30,y:55,r:10,c:'#ef4444',l:'PEP'},{x:110,y:20,r:7,c:'#a78bfa',l:'Spouse'},{x:110,y:55,r:7,c:'#a78bfa',l:'Brother'},{x:110,y:90,r:7,c:'#a78bfa',l:'Son'},{x:200,y:55,r:8,c:'#f59e0b',l:'Shell Co'}],
+      edges:[{s:0,t:1,f:0},{s:0,t:2,f:0},{s:0,t:3,f:0},{s:1,t:4,f:1},{s:2,t:4,f:1},{s:3,t:4,f:1}],
+      label:'Straw-person arrangement'
+    },
+    'pep-geo':{
+      nodes:[{x:30,y:55,r:10,c:'#ef4444',l:'PEP'},{x:120,y:20,r:7,c:'#f59e0b',l:'Cayman'},{x:120,y:55,r:7,c:'#f59e0b',l:'Dubai'},{x:120,y:90,r:7,c:'#f59e0b',l:'Panama'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1},{s:0,t:3,f:1}],
+      label:'High-risk jurisdictions, no official duty'
+    },
+    'pep-beneficial':{
+      nodes:[{x:210,y:55,r:10,c:'#ef4444',l:'PEP'},{x:140,y:30,r:7,c:'#f59e0b',l:'Holding'},{x:140,y:80,r:7,c:'#f59e0b',l:'Trust'},{x:70,y:30,r:7,c:'#94a3b8',l:'LLC A'},{x:70,y:80,r:7,c:'#94a3b8',l:'LLC B'},{x:20,y:55,r:8,c:'#00d4ff',l:'Bank'}],
+      edges:[{s:0,t:1,f:0},{s:0,t:2,f:0},{s:1,t:3,f:0},{s:2,t:4,f:0},{s:3,t:5,f:1},{s:4,t:5,f:1}],
+      label:'Ownership chain traversal'
+    },
+    /* ── Sanctions ── */
+    'sanctions-match':{
+      nodes:[{x:40,y:55,r:10,c:'#ef4444',l:'Entity'},{x:160,y:35,r:9,c:'#ef4444',l:'OFAC SDN'},{x:160,y:75,r:9,c:'#ef4444',l:'EU List'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1}],
+      label:'Exact match — real-time screening'
+    },
+    'sanctions-near':{
+      nodes:[{x:40,y:55,r:10,c:'#f59e0b',l:'"Ahmad"'},{x:160,y:35,r:9,c:'#ef4444',l:'"Ahmed"'},{x:160,y:75,r:9,c:'#ef4444',l:'"Ahmet"'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1}],
+      label:'Fuzzy / phonetic matching'
+    },
+    'sanctions-proximity':{
+      nodes:[{x:20,y:55,r:8,c:'#00d4ff',l:'Entity'},{x:80,y:35,r:6,c:'#94a3b8',l:'1-hop'},{x:80,y:75,r:6,c:'#94a3b8',l:'1-hop'},{x:140,y:55,r:7,c:'#f59e0b',l:'2-hop'},{x:200,y:55,r:10,c:'#ef4444',l:'SDN ⚠'}],
+      edges:[{s:0,t:1,f:0},{s:0,t:2,f:0},{s:1,t:3,f:0},{s:2,t:3,f:0},{s:3,t:4,f:1}],
+      label:'N-hop graph proximity'
+    },
+    /* ── Behavioral Anomaly ── */
+    'volume-spike':{type:'bar',bars:[10,12,14,11,13,12,15,11,14,65,12],label:'3σ above baseline'},
+    'velocity':{type:'bar',bars:[3,4,3,5,4,3,4,38,4,3,5],label:'95th percentile burst'},
+    'geo-anomaly':{
+      nodes:[{x:40,y:55,r:10,c:'#00d4ff',l:'Entity'},{x:130,y:25,r:7,c:'#10b981',l:'US ✓'},{x:130,y:55,r:7,c:'#10b981',l:'UK ✓'},{x:130,y:85,r:8,c:'#ef4444',l:'Iran ⚠'}],
+      edges:[{s:0,t:1,f:0},{s:0,t:2,f:0},{s:0,t:3,f:1}],
+      label:'No prior relationship'
+    },
+    'temporal':{type:'bar',bars:[8,10,7,9,2,1,0,1,0,35,2],label:'Activity outside normal hours'},
+    'dormant':{type:'bar',bars:[0,0,0,0,0,0,0,0,42,55,48],label:'18 months dormant → sudden activation'},
+    /* ── Network Anomaly ── */
+    'new-highrisk':{
+      nodes:[{x:40,y:55,r:10,c:'#00d4ff',l:'Entity'},{x:120,y:30,r:7,c:'#10b981',l:'Known'},{x:120,y:80,r:7,c:'#10b981',l:'Known'},{x:200,y:55,r:10,c:'#ef4444',l:'⚠ Flagged'}],
+      edges:[{s:0,t:1,f:0},{s:0,t:2,f:0},{s:0,t:3,f:1}],
+      label:'New edge to flagged counterparty'
+    },
+    'community-change':{
+      nodes:[{x:35,y:30,r:6,c:'#00d4ff',l:'A'},{x:35,y:80,r:6,c:'#00d4ff',l:'B'},{x:80,y:55,r:6,c:'#00d4ff',l:'C'},{x:155,y:30,r:6,c:'#ef4444',l:'X'},{x:155,y:80,r:6,c:'#ef4444',l:'Y'},{x:200,y:55,r:6,c:'#ef4444',l:'Z'}],
+      edges:[{s:0,t:1,f:0},{s:0,t:2,f:0},{s:1,t:2,f:0},{s:3,t:4,f:0},{s:3,t:5,f:0},{s:4,t:5,f:0},{s:2,t:3,f:1}],
+      label:'New corridor between clusters'
+    },
+    'hidden-controller':{
+      nodes:[{x:120,y:15,r:10,c:'#ef4444',l:'Controller'},{x:30,y:50,r:7,c:'#f59e0b',l:'Co. A'},{x:120,y:50,r:7,c:'#f59e0b',l:'Co. B'},{x:210,y:50,r:7,c:'#f59e0b',l:'Co. C'},{x:30,y:90,r:6,c:'#00d4ff',l:'Bank 1'},{x:120,y:90,r:6,c:'#00d4ff',l:'Bank 2'},{x:210,y:90,r:6,c:'#00d4ff',l:'Bank 3'}],
+      edges:[{s:0,t:1,f:1},{s:0,t:2,f:1},{s:0,t:3,f:1},{s:1,t:4,f:0},{s:2,t:5,f:0},{s:3,t:6,f:0}],
+      label:'Same UBO, "unrelated" entities'
+    }
+  };
+
+  function renderGraph(svg,data){
+    var s='<defs><marker id="dmArr" viewBox="0 0 8 5" refX="8" refY="2.5" markerWidth="5" markerHeight="3.5" orient="auto"><path d="M0,0 L8,2.5 L0,5" fill="#94a3b8" opacity=".5"/></marker><marker id="dmArrR" viewBox="0 0 8 5" refX="8" refY="2.5" markerWidth="5" markerHeight="3.5" orient="auto"><path d="M0,0 L8,2.5 L0,5" fill="#ef4444" opacity=".6"/></marker></defs>';
+    /* Edges */
+    data.edges.forEach(function(e){
+      var a=data.nodes[e.s],b=data.nodes[e.t];
+      var dx=b.x-a.x,dy=b.y-a.y,d=Math.sqrt(dx*dx+dy*dy)||1;
+      var sx=a.x+dx/d*a.r,sy=a.y+dy/d*a.r;
+      var tx=b.x-dx/d*b.r,ty=b.y-dy/d*b.r;
+      var cx=(sx+tx)/2+dy*0.12,cy=(sy+ty)/2-dx*0.12;
+      s+='<path d="M'+sx+','+sy+' Q'+cx+','+cy+' '+tx+','+ty+'" fill="none" stroke="'+(e.f?'#ef4444':'#334155')+'" stroke-width="'+(e.f?1.5:1)+'" opacity="'+(e.f?.55:.3)+'"'+(e.f?' stroke-dasharray="4,3"':'')+' marker-end="url(#'+(e.f?'dmArrR':'dmArr')+')"/>';
+    });
+    /* Nodes */
+    data.nodes.forEach(function(n){
+      s+='<circle cx="'+n.x+'" cy="'+n.y+'" r="'+(n.r+5)+'" fill="none" stroke="'+n.c+'" stroke-width=".3" opacity=".15"/>';
+      s+='<circle cx="'+n.x+'" cy="'+n.y+'" r="'+n.r+'" fill="#0f172a" stroke="'+n.c+'" stroke-width="1.2"/>';
+      s+='<text x="'+n.x+'" y="'+(n.y+3)+'" text-anchor="middle" font-size="5.5" font-weight="600" fill="#e2e8f0" font-family="Inter,system-ui">'+n.l+'</text>';
+    });
+    /* Label */
+    if(data.label) s+='<text x="120" y="108" text-anchor="middle" font-size="6" fill="#64748b" font-family="Inter,system-ui">'+data.label+'</text>';
+    svg.innerHTML=s;
+  }
+
+  function renderBar(svg,data){
+    var bars=data.bars,max=Math.max.apply(null,bars);
+    var s='';
+    var bw=16,gap=4,total=bars.length*(bw+gap);
+    var ox=(240-total)/2;
+    bars.forEach(function(v,i){
+      var h=Math.max(2,(v/max)*80);
+      var isSpike=v>max*0.6&&v===Math.max.apply(null,bars);
+      s+='<rect x="'+(ox+i*(bw+gap))+'" y="'+(90-h)+'" width="'+bw+'" height="'+h+'" rx="2" fill="'+(isSpike?'#ef4444':'#334155')+'" opacity="'+(isSpike?.7:.35)+'"/>';
+    });
+    if(data.label) s+='<text x="120" y="106" text-anchor="middle" font-size="6" fill="#64748b" font-family="Inter,system-ui">'+data.label+'</text>';
+    svg.innerHTML=s;
+  }
+
+  /* Click handler */
+  document.querySelectorAll('.detect-card[data-pattern]').forEach(function(card){
+    card.addEventListener('click',function(){
+      var wasExpanded=card.classList.contains('expanded');
+      /* Close all in same grid */
+      card.closest('.detect-grid').querySelectorAll('.detect-card.expanded').forEach(function(c){c.classList.remove('expanded')});
+      if(wasExpanded) return;
+      card.classList.add('expanded');
+      var svg=card.querySelector('.d-chart svg');
+      if(svg&&!svg.innerHTML){
+        var pid=card.getAttribute('data-pattern');
+        var d=charts[pid];
+        if(!d) return;
+        if(d.type==='bar') renderBar(svg,d);
+        else renderGraph(svg,d);
+      }
+    });
+  });
 })();
 
 </script>
